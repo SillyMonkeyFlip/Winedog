@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>WineDog</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/config.js"></script>
+</head>
+<body>
+  <!-- Login -->
+  <main id="login" class="center" hidden>
+    <form class="card" id="login-form" autocomplete="on">
+      <p class="brand">WineDog</p>
+      <h1>Sign in</h1>
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" required>
+      <label for="code">Code</label>
+      <input id="code" type="password" autocomplete="current-password" required>
+      <button class="primary block" type="submit" id="login-btn">Continue</button>
+      <div class="error" id="login-error"></div>
+    </form>
+  </main>
+
+  <!-- Homepage (content comes from the server after login) -->
+  <div id="home" hidden>
+    <header class="topbar">
+      <p class="brand">WineDog</p>
+      <button class="linkbtn" id="logout">Sign out</button>
+    </header>
+    <main id="home-content"></main>
+  </div>
+
+  <script src="/assets/home.js"></script>
+</body>
+</html>

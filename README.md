@@ -9,7 +9,7 @@
 ## How it fits together
 
 ```
-GitHub Pages (docs/)              Cloudflare Worker (worker/)
+GitHub Pages (top folder)         Cloudflare Worker (worker/)
   /        blank image              /api/login   checks email + code
   /1       sign-in + page shell  →  /api/me      sends the protected homepage
   /dev     panel shell              /api/admin/* accounts, codes, sessions, email
@@ -29,36 +29,40 @@ device out from the panel.
 
 ## One-time setup
 
-You need [Node.js](https://nodejs.org) (LTS) installed. Run the commands below in a terminal
-(PowerShell is fine) from the `Winedog` folder.
+### 1. Set up Cloudflare (automatic)
 
-### 1. Create the Cloudflare Worker and database
+Double-click **`Setup Cloudflare.bat`** in the `Winedog` folder. It will:
+
+1. Install Node.js if it's missing (it asks first)
+2. Install the Cloudflare tools
+3. Open your browser to sign in to Cloudflare (click **Allow**)
+4. Create the `winedog` database and its tables
+5. Publish the Worker (the first time, Cloudflare may ask you to pick a `workers.dev` name)
+6. Ask you to choose your `/dev` admin password, and optionally paste a Resend key for emails
+7. Put the Worker's address into `assets/config.js`
+
+It's safe to run again any time, for example to change your admin password, add the Resend key,
+or publish changes to `worker/src/home.js`. It skips anything already done.
+
+<details><summary>Doing it by hand instead</summary>
 
 ```powershell
 cd worker
 npm install
-npx wrangler login                 # opens your browser to sign in to Cloudflare
-npx wrangler d1 create winedog     # prints a database_id
+npx wrangler login
+npx wrangler d1 create winedog     # paste the database_id into wrangler.toml
+npm run db:init
+npm run deploy                     # paste the printed URL into assets/config.js
+npx wrangler secret put ADMIN_PASSWORD
 ```
-
-Open `worker/wrangler.toml` and replace `PASTE-DATABASE-ID-HERE` with that `database_id`. Then:
-
-```powershell
-npm run db:init                          # creates the tables
-npx wrangler secret put ADMIN_PASSWORD   # type the password you'll use for /dev
-npm run deploy                           # prints your Worker URL
-```
-
-The deploy prints a URL like `https://winedog-api.yourname.workers.dev`.
-Paste it into `docs/assets/config.js` in place of
-`https://winedog-api.YOUR-SUBDOMAIN.workers.dev`.
+</details>
 
 ### 2. Publish to GitHub
 
 1. In GitHub Desktop, click **Publish repository**, name it `Winedog`, and **uncheck "Keep this code private"**.
    GitHub Pages needs a public repo on a free plan. That's safe here because nothing secret is in the repo.
 2. On github.com, open the repo and go to **Settings → Pages**.
-   - Source: **Deploy from a branch**, Branch: **main**, Folder: **/docs**, then Save.
+   - Source: **Deploy from a branch**, Branch: **main**, Folder: **/ (root)**, then Save.
    - Custom domain: `winedog.site`, then Save. Tick **Enforce HTTPS** once it becomes available (it can take up to an hour).
 
 ### 3. Point WineDog.site at GitHub (Namecheap)
@@ -84,10 +88,7 @@ Until this is done, the **Email code** button opens your own mail app with the m
 2. Resend shows some DNS records (TXT and MX). Add each one in Namecheap Advanced DNS exactly as shown,
    then click **Verify** in Resend.
 3. In Resend, go to **API Keys → Create API key** and copy it.
-4. Run this from the `worker` folder and paste the key:
-   ```powershell
-   npx wrangler secret put RESEND_API_KEY
-   ```
+4. Run **`Setup Cloudflare.bat`** again and paste the key when it asks.
 
 Emails come from `noreply@winedog.site` and say: *Your code for Winedog.site is CODE*.
 You can change the sender in `wrangler.toml` (`EMAIL_FROM`), then run `npm run deploy`.
@@ -108,11 +109,11 @@ The admin sign-in lasts 12 hours on a device.
 
 ## Changing things
 
-- **Landing page image:** save your photo as `docs/image.jpg`, then commit and push.
-- **Homepage content:** edit `worker/src/home.js`, then run `npm run deploy` from the `worker` folder.
-  Keep private content there, not in `docs/`, because everything in `docs/` is public on GitHub.
+- **Landing page image:** save your photo as `image.jpg` (next to `index.html`), then commit and push.
+- **Homepage content:** edit `worker/src/home.js`, then run **`Setup Cloudflare.bat`** again (or `npm run deploy` in the `worker` folder).
+  Keep private content there, not in the website files, because everything in the repo is public on GitHub.
   `account.role` is passed in, ready for showing Special users different things later.
-- **Page styling:** `docs/assets/style.css`.
+- **Page styling:** `assets/style.css`.
 
 ## Testing on your own computer
 
@@ -124,7 +125,6 @@ npm run db:init:local
 npm run dev
 
 # terminal 2
-cd docs
 npx serve -l 8080
 ```
 

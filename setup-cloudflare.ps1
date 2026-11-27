@@ -8,7 +8,7 @@ $OutputEncoding = New-Object System.Text.UTF8Encoding $false
 $root     = Split-Path -Parent $MyInvocation.MyCommand.Path
 $worker   = Join-Path $root 'worker'
 $toml     = Join-Path $worker 'wrangler.toml'
-$config   = Join-Path $root 'docs\assets\config.js'
+$config   = Join-Path $root 'assets\config.js'
 
 function Step($n, $text) { Write-Host ""; Write-Host "[$n/7] $text" -ForegroundColor Cyan }
 function Ok($text)       { Write-Host "  OK  $text" -ForegroundColor Green }
@@ -149,7 +149,7 @@ Step 7 "Connecting the website to the Worker"
 $c = Get-Content $config -Raw
 $c = $c -replace "window\.WINEDOG_API = 'https://[^']*';", "window.WINEDOG_API = '$url';"
 Set-Content -Path $config -Value $c -NoNewline
-Ok "docs\assets\config.js now uses $url"
+Ok "assets\config.js now uses $url"
 
 Write-Host ""
 Write-Host "  All done." -ForegroundColor Green
