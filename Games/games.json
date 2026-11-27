@@ -13,6 +13,12 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "ADOFAI",
+                      "path":  "ADOFAI",
+                      "icon":  "images(7).png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Aim Trainer",
                       "path":  "Aim Trainer",
                       "icon":  "cover.png",
@@ -43,9 +49,21 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "Baseball Bros",
+                      "path":  "Baseball Bros",
+                      "icon":  "images.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Basket Bros",
                       "path":  "basketbros-io",
                       "icon":  "thumb.jpg",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Capuchin",
+                      "path":  "Capuchin",
+                      "icon":  "images(1).png",
                       "iconAuto":  true
                   },
                   {
@@ -73,9 +91,21 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "CSGO Clicker",
+                      "path":  "CSGO Clicker",
+                      "icon":  "39322951.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Cubefield",
                       "path":  "cubefield",
                       "icon":  "assets/cubefield.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "DDLC",
+                      "path":  "DDLC",
+                      "icon":  "Doki_Doki_Literature_Club_Cover.png",
                       "iconAuto":  true
                   },
                   {
@@ -94,6 +124,12 @@
                       "name":  "Doodle Jump",
                       "path":  "Doodle Jump",
                       "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Drift Boss",
+                      "path":  "Drift Boss",
+                      "icon":  "images(2).png",
                       "iconAuto":  true
                   },
                   {
@@ -187,6 +223,18 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "Gorilla Tag",
+                      "path":  "Gorilla Tag",
+                      "icon":  "images(3).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Half Life",
+                      "path":  "Half Life",
+                      "icon":  "2133.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Helix Jump",
                       "path":  "Helix Jump",
                       "icon":  "images(5).png",
@@ -205,6 +253,12 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "Infinite Craft",
+                      "path":  "Infinite Craft",
+                      "icon":  "infinite-craft.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Jetpack Joyride",
                       "path":  "jetpack-joyride",
                       "icon":  "splash.jpg",
@@ -214,6 +268,12 @@
                       "name":  "Little Alchemy 2",
                       "path":  "Little Alchemy 2",
                       "icon":  "images(1).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Madilin Stunt Cars 2",
+                      "path":  "Madilin Stunt Cars 2",
+                      "icon":  "images(4).png",
                       "iconAuto":  true
                   },
                   {
@@ -235,6 +295,12 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "Paper io 3D",
+                      "path":  "Paper io 3D",
+                      "icon":  "unnamed.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Paper.io 2",
                       "path":  "paperio2",
                       "icon":  "images/icon512.png",
@@ -250,6 +316,12 @@
                       "name":  "Rarest",
                       "path":  "Rarest",
                       "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Rythem Hell",
+                      "path":  "Rythem Hell",
+                      "icon":  "images(5).png",
                       "iconAuto":  true
                   },
                   {
@@ -286,6 +358,12 @@
                       "name":  "Snow Rider 3D",
                       "path":  "snowrider3d",
                       "icon":  "TemplateData/logo.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Soccer Bros",
+                      "path":  "Soccer Bros",
+                      "icon":  "images(6).png",
                       "iconAuto":  true
                   },
                   {
@@ -337,9 +415,21 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "There is no Game",
+                      "path":  "There is no Game",
+                      "icon":  "unnamed(1).png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Tomb of the Mask",
                       "path":  "Tomb of the Mask",
                       "icon":  "images(4).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Trees Hate You",
+                      "path":  "Trees Hate You",
+                      "icon":  "cob3ai.png",
                       "iconAuto":  true
                   },
                   {
