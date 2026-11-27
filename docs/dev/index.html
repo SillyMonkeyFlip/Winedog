@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>WineDog · Dev</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/config.js"></script>
+</head>
+<body>
+  <!-- Admin login -->
+  <main id="login" class="center" hidden>
+    <form class="card" id="login-form">
+      <p class="brand">WineDog · Dev</p>
+      <h1>Admin</h1>
+      <label for="password">Admin password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button class="primary block" type="submit">Sign in</button>
+      <div class="error" id="login-error"></div>
+    </form>
+  </main>
+
+  <!-- Panel -->
+  <div id="panel" class="wrap" hidden>
+    <div class="head">
+      <h1>Accounts</h1>
+      <div class="row">
+        <button class="small" id="refresh">Refresh</button>
+        <button class="small" id="logout">Sign out</button>
+      </div>
+    </div>
+
+    <div class="banner" id="email-banner" hidden>
+      Email sending isn't set up yet. "Email code" will open your own mail app with the message filled in instead.
+      See the README to connect Resend.
+    </div>
+
+    <section class="panel">
+      <h2>Create account</h2>
+      <form id="create-form">
+        <div class="grid">
+          <div class="field"><label>Email</label><input id="c-email" type="email" required></div>
+          <div class="field"><label>Name (optional)</label><input id="c-name"></div>
+          <div class="field">
+            <label>Role</label>
+            <select id="c-role"><option>Normal</option><option>Special</option></select>
+          </div>
+          <div class="field">
+            <label>Code</label>
+            <div class="row">
+              <input id="c-code" class="code" placeholder="Blank = random">
+              <button type="button" class="small" id="c-random">Random</button>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="c-notes"></textarea></div>
+        <label class="check"><input type="checkbox" id="c-send"> Email the code to them now</label>
+        <button class="primary" type="submit">Create account</button>
+        <span class="error" id="create-error"></span>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2 id="count">Accounts</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th><th>Role</th><th>Code</th><th>Last login</th><th>Sessions</th><th>Notes</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="muted" id="empty" hidden>No accounts yet.</p>
+    </section>
+  </div>
+
+  <!-- Edit dialog -->
+  <dialog id="edit">
+    <form id="edit-form" method="dialog">
+      <h2>Edit account</h2>
+      <div class="field"><label>Email</label><input id="e-email" type="email" required></div>
+      <div class="field"><label>Name</label><input id="e-name"></div>
+      <div class="field">
+        <label>Role</label>
+        <select id="e-role"><option>Normal</option><option>Special</option></select>
+      </div>
+      <div class="field">
+        <label>Code (changing it signs them out everywhere)</label>
+        <div class="row">
+          <input id="e-code" class="code">
+          <button type="button" class="small" id="e-random">Random</button>
+        </div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="e-notes"></textarea></div>
+      <div class="error" id="edit-error"></div>
+      <div class="dialog-actions">
+        <button type="button" id="e-cancel">Cancel</button>
+        <button type="submit" class="primary" id="e-save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Sessions dialog -->
+  <dialog id="sessions">
+    <h2 id="s-title">Sessions</h2>
+    <div id="s-list"></div>
+    <div class="dialog-actions">
+      <button type="button" class="danger" id="s-all">Sign out all devices</button>
+      <button type="button" id="s-close">Close</button>
+    </div>
+  </dialog>
+
+  <script src="/assets/dev.js"></script>
+</body>
+</html>
