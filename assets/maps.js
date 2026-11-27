@@ -11,6 +11,8 @@
 
   // q: place search, or from/to for directions. t: m map, k satellite, h hybrid, p terrain.
   const DEFAULT = { q: '', from: '', to: '', mode: 'd', t: 'm', z: 4 };
+  // Street View is shown on top of whatever place is open: { lat, lng, heading } or null.
+  let sv = null;
   let state = { ...DEFAULT, ...read(LS.state, {}) };
   let loaded = false;
 
@@ -19,6 +21,7 @@
   const label = () => (isDirections() ? `${state.from || 'Your location'} → ${state.to}` : state.q);
 
   function embedUrl() {
+    if (sv) return `https://maps.google.com/maps?layer=c&cbll=${sv.lat},${sv.lng}&cbp=12,${sv.heading},0,0,0&source=embed&output=svembed&hl=en`;
     const base = 'https://maps.google.com/maps?output=embed&hl=en';
     if (isDirections()) {
       const flag = { w: 'w', b: 'b', r: 'r' }[state.mode];
@@ -29,6 +32,7 @@
   }
 
   function openUrl() {
+    if (sv) return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${sv.lat},${sv.lng}&heading=${sv.heading}`;
     if (isDirections()) {
       const mode = { d: 'driving', w: 'walking', b: 'bicycling', r: 'transit' }[state.mode];
       return `https://www.google.com/maps/dir/?api=1&origin=${enc(state.from)}&destination=${enc(state.to)}&travelmode=${mode}`;
@@ -49,6 +53,12 @@
     document.querySelectorAll('#map-type button').forEach((b) => b.classList.toggle('on', b.dataset.v === state.t));
     document.querySelectorAll('#map-mode button').forEach((b) => b.classList.toggle('on', b.dataset.v === state.mode));
     $('map-zoom-in').disabled = $('map-zoom-out').disabled = isDirections();
+    for (const id of ['map-zoom-in', 'map-zoom-out']) $(id).hidden = !!sv;
+    for (const id of ['map-turn-left', 'map-turn-right']) $(id).hidden = !sv;
+    $('map-type').hidden = !!sv;
+    $('map-sv').classList.toggle('on', !!sv);
+    $('map-sv').querySelector('span').textContent = sv ? 'Back to map' : 'Street View';
+    $('map-sv').disabled = !sv && !state.q && !state.to;
     const saved = read(LS.saved, []);
     const here = placeKey();
     $('map-save').disabled = !here;
@@ -73,6 +83,7 @@
     write(LS.recent, list.slice(0, MAX_RECENT));
   }
   function go(p) {
+    sv = null;
     state = { ...state, q: p.q || '', from: p.from || '', to: p.to || '', mode: p.mode || 'd' };
     if (state.q && !state.to) state.z = Math.max(state.z, 13);
     $('map-q').value = state.q;
@@ -118,6 +129,37 @@
     r.replaceChildren(...recent.map((p) => row(p)));
     if (!recent.length) r.innerHTML = '<p class="muted small">Nothing yet.</p>';
     $('map-clear-recent').hidden = !recent.length;
+  }
+
+  // ---------------------------------------------------------------- street view
+
+  const COORDS = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
+
+  // Street View needs a latitude and longitude. Coordinates are used as they are;
+  // a place name is looked up with OpenStreetMap's free search.
+  async function coordsFor(place) {
+    const m = place.match(COORDS);
+    if (m) return { lat: +m[1], lng: +m[2] };
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${enc(place)}`, { headers: { Accept: 'application/json' } });
+    if (!r.ok) throw new Error('lookup failed');
+    const [hit] = await r.json();
+    if (!hit) throw new Error('not found');
+    return { lat: +(+hit.lat).toFixed(6), lng: +(+hit.lon).toFixed(6) };
+  }
+
+  async function toggleStreetView() {
+    if (sv) { sv = null; render(); return; }
+    const place = isDirections() ? state.to : state.q;
+    if (!place) return;
+    $('map-error').textContent = 'Finding Street View…';
+    try {
+      const c = await coordsFor(place);
+      sv = { ...c, heading: 0 };
+      $('map-error').textContent = '';
+      render();
+    } catch {
+      $('map-error').textContent = 'Couldn’t find that place for Street View. Try a more exact address.';
+    }
   }
 
   // ---------------------------------------------------------------- location
@@ -170,8 +212,12 @@
     const b = e.target.closest('button');
     if (!b) return;
     state.t = b.dataset.v;
+    sv = null;
     render();
   });
+  $('map-sv').addEventListener('click', toggleStreetView);
+  $('map-turn-left').addEventListener('click', () => { if (sv) { sv.heading = (sv.heading + 270) % 360; render(); } });
+  $('map-turn-right').addEventListener('click', () => { if (sv) { sv.heading = (sv.heading + 90) % 360; render(); } });
   $('map-zoom-in').addEventListener('click', () => { state.z = Math.min(21, state.z + 1); render(); });
   $('map-zoom-out').addEventListener('click', () => { state.z = Math.max(2, state.z - 1); render(); });
   $('map-locate').addEventListener('click', () => locate((here) => { state.z = Math.max(state.z, 15); go({ q: here, noRecent: true }); }));

@@ -8,19 +8,13 @@
   };
   const MAX_HISTORY = 40;
   const DEFAULT_OPTS = {
-    cc: false, ambient: true,
+    cc: false,
     ccSize: 'm', ccBg: 'box', ccPos: 'bottom', ccFont: 'sans', ccLang: 'en',
-    amStrength: 'med', amSpread: 'm', amPrecision: 'med', amSpeed: 'normal', amColor: 'on', amBreathe: 'off', amDim: 'off',
   };
 
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  const opts = () => {
-    const saved = read(LS.opts, {});
-    // Older versions had a "Blur" option; carry it over to "Precision".
-    if (saved.amBlur && !saved.amPrecision) saved.amPrecision = { soft: 'high', med: 'med', strong: 'low' }[saved.amBlur] || 'med';
-    return { ...DEFAULT_OPTS, ...saved };
-  };
+  const opts = () => ({ ...DEFAULT_OPTS, ...read(LS.opts, {}) });
   const setOpt = (patch) => { write(LS.opts, { ...read(LS.opts, {}), ...patch }); applyOpts(); };
 
   let player = null;
@@ -179,7 +173,7 @@
     const v = current;
     $('vid-title').textContent = titles[keyOf(v)] || '';
     titleFor(v).then((t) => { if (current === v) $('vid-title').textContent = t; renderLists(); });
-    setAmbientImages(v.id);
+    window.WDAmbient?.setVideo(v.id);
     renderLists();
     loadTranscript();
   }
@@ -325,38 +319,17 @@
       }
       lastLine = i;
     }
-
-    // Ambient: drift between frames from the start, middle and end of the video.
-    let dur = 0;
-    try { dur = player.getDuration?.() || 0; } catch {}
-    const p = dur ? t / dur : 0;
-    const which = p < 0.34 ? 0 : p < 0.67 ? 1 : 2;
-    $('vid-ambient').querySelectorAll('img').forEach((img, k) => img.classList.toggle('on', k === which));
   }
 
-  // ---------------------------------------------------------------- ambient + options
-
-  function setAmbientImages(id) {
-    const imgs = $('vid-ambient').querySelectorAll('img');
-    if (!id) { imgs.forEach((img) => { img.removeAttribute('src'); }); return; }
-    const names = ['hqdefault', 'hq2', 'hq3'];
-    imgs.forEach((img, k) => {
-      img.onerror = () => { if (!img.src.includes('hqdefault')) img.src = thumb(id, 'hqdefault'); };
-      img.src = thumb(id, names[k]);
-      img.classList.toggle('on', k === 0);
-    });
-  }
+  // ---------------------------------------------------------------- options
 
   function applyOpts() {
     const o = opts();
     const wrap = $('videos-wrap');
-    for (const k of ['ccSize', 'ccBg', 'ccPos', 'ccFont', 'amStrength', 'amSpread', 'amPrecision', 'amSpeed', 'amColor', 'amBreathe', 'amDim']) wrap.dataset[k] = o[k];
-    wrap.classList.toggle('ambient-on', !!o.ambient);
-    $('vid-ambient-btn').classList.toggle('on', !!o.ambient);
-    $('vid-ambient-btn').title = o.ambient ? 'Turn off ambient mode' : 'Ambient mode';
+    for (const k of ['ccSize', 'ccBg', 'ccPos', 'ccFont']) wrap.dataset[k] = o[k];
     $('vid-cc-btn').classList.toggle('on', !!o.cc);
     $('vid-cc-btn').title = o.cc ? 'Turn off WineDog captions' : 'WineDog captions';
-    document.querySelectorAll('#cc-panel .seg').forEach((seg) => {
+    document.querySelectorAll('#cc-panel .seg[data-opt]').forEach((seg) => {
       seg.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === o[seg.dataset.opt]));
     });
     if (!o.cc) $('vid-cc').hidden = true;
@@ -466,13 +439,12 @@
     setOpt({ cc: on });
     if (on && !lines.length) toast(current ? 'No captions loaded for this video yet.' : 'Captions will show when a video plays.');
   });
-  $('vid-ambient-btn').addEventListener('click', () => setOpt({ ambient: !opts().ambient }));
   $('vid-cc-settings').addEventListener('click', () => {
     const p = $('cc-panel');
     p.hidden = !p.hidden;
     $('vid-cc-settings').classList.toggle('on', !p.hidden);
   });
-  document.querySelectorAll('#cc-panel .seg').forEach((seg) => {
+  document.querySelectorAll('#cc-panel .seg[data-opt]').forEach((seg) => {
     seg.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-v]');
       if (b) setOpt({ [seg.dataset.opt]: b.dataset.v });
@@ -495,11 +467,14 @@
     } catch { toast("Couldn't copy. Your browser blocked it."); }
   });
 
+  window.WDAmbient?.attach(() => player);
+
   window.WDVideos = {
     show() {
       setTheater(read(LS.theater, false));
       showPane(read(LS.pane, 'transcript'));
       applyOpts();
+      window.WDAmbient?.apply();
       renderLists();
       if (!current) $('vid-url').focus();
     },

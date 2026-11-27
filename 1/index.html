@@ -132,6 +132,9 @@
               <div class="rail-spacer"></div>
               <button class="iconbtn" id="map-zoom-out" type="button" title="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
               <button class="iconbtn" id="map-zoom-in" type="button" title="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+              <button class="iconbtn" id="map-turn-left" type="button" title="Turn left" hidden><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/></svg></button>
+              <button class="iconbtn" id="map-turn-right" type="button" title="Turn right" hidden><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4"/></svg></button>
+              <button class="iconbtn labeled" id="map-sv" type="button" title="Street View of this place"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M9 21v-6H7.5v-4a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v4H15v6"/></svg><span>Street View</span></button>
               <button class="iconbtn" id="map-locate" type="button" title="My location"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>
               <button class="iconbtn" id="map-save" type="button" title="Save place"><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg></button>
               <button class="iconbtn" id="map-fullscreen" type="button" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
@@ -172,7 +175,7 @@
         <div class="vid-layout">
           <div class="vid-main">
             <div class="vid-stage-wrap" id="vid-stage-wrap">
-              <div class="vid-ambient" id="vid-ambient" aria-hidden="true"><img alt=""><img alt=""><img alt=""></div>
+              <div class="vid-ambient" id="vid-ambient" aria-hidden="true"></div>
               <div class="vid-stage" id="vid-stage">
                 <div id="vid-player"></div>
                 <div class="vid-cc" id="vid-cc" hidden><span></span></div>
@@ -215,14 +218,27 @@
               <div class="cc-row"><span>Position</span><div class="seg" data-opt="ccPos"><button data-v="bottom">Bottom</button><button data-v="top">Top</button></div></div>
               <div class="cc-row"><span>Font</span><div class="seg" data-opt="ccFont"><button data-v="sans">Sans</button><button data-v="serif">Serif</button><button data-v="mono">Mono</button></div></div>
               <div class="cc-row"><span>Language</span><select id="cc-lang"></select></div>
-              <h3>Ambient mode</h3>
-              <div class="cc-row"><span>Strength</span><div class="seg" data-opt="amStrength"><button data-v="low">Low</button><button data-v="med">Medium</button><button data-v="high">High</button><button data-v="max">Max</button></div></div>
-              <div class="cc-row"><span>Spread</span><div class="seg" data-opt="amSpread"><button data-v="s">Small</button><button data-v="m">Medium</button><button data-v="l">Large</button></div></div>
-              <div class="cc-row"><span>Precision</span><div class="seg" data-opt="amPrecision"><button data-v="low">Low</button><button data-v="med">Medium</button><button data-v="high">High</button><button data-v="exact">Exact</button></div></div>
-              <div class="cc-row"><span>Speed</span><div class="seg" data-opt="amSpeed"><button data-v="slow">Slow</button><button data-v="normal">Normal</button><button data-v="fast">Fast</button><button data-v="instant">Instant</button></div></div>
-              <div class="cc-row"><span>Color boost</span><div class="seg" data-opt="amColor"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
-              <div class="cc-row"><span>Breathing</span><div class="seg" data-opt="amBreathe"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
-              <div class="cc-row"><span>Dim page</span><div class="seg" data-opt="amDim"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
+              <div id="am-panel">
+              <h3>Ambient light</h3>
+              <label class="cc-row am-range"><span>Strength</span><input type="range" data-am="strength" min="0" max="100" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Spread</span><input type="range" data-am="spread" min="0" max="100" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Blur</span><input type="range" data-am="blur" min="0" max="100" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Edge fade</span><input type="range" data-am="edge" min="0" max="100" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Fade in</span><input type="range" data-am="fadeIn" min="0" max="3000" step="100"><output></output></label>
+              <h3>Motion</h3>
+              <div class="cc-row"><span>Smooth motion</span><div class="seg" data-am="smooth"><button type="button" data-v="true">On</button><button type="button" data-v="false">Off</button></div></div>
+              <div class="cc-row"><span>Detail</span><div class="seg" data-am="detail"><button type="button" data-v="low">Low</button><button type="button" data-v="med">Medium</button><button type="button" data-v="high">High</button></div></div>
+              <div class="cc-row"><span>Frame rate</span><div class="seg" data-am="fps"><button type="button" data-v="10">10</button><button type="button" data-v="24">24</button><button type="button" data-v="30">30</button><button type="button" data-v="60">60</button></div></div>
+              <h3>Filters (video and light)</h3>
+              <label class="cc-row am-range"><span>Brightness</span><input type="range" data-am="brightness" min="50" max="150" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Contrast</span><input type="range" data-am="contrast" min="50" max="150" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Saturation</span><input type="range" data-am="saturation" min="0" max="200" step="1"><output></output></label>
+              <label class="cc-row am-range"><span>Light color boost</span><input type="range" data-am="glowSat" min="50" max="250" step="1"><output></output></label>
+              <h3>Page</h3>
+              <div class="cc-row"><span>Video shadow</span><div class="seg" data-am="shadow"><button type="button" data-v="true">On</button><button type="button" data-v="false">Off</button></div></div>
+              <div class="cc-row"><span>Background</span><div class="seg" data-am="page"><button type="button" data-v="theme">Theme</button><button type="button" data-v="dim">Dim</button><button type="button" data-v="black">Black</button></div></div>
+              <div class="cc-row"><span></span><button type="button" class="small" id="am-reset">Reset ambient light</button></div>
+              </div>
             </div>
           </div>
 
@@ -366,6 +382,7 @@
   <script src="/assets/splash.js"></script>
   <script src="/assets/home.js"></script>
   <script src="/assets/settings.js"></script>
+  <script src="/assets/ambient.js"></script>
   <script src="/assets/videos.js"></script>
   <script src="/assets/maps.js"></script>
   <script src="/assets/games.js"></script>

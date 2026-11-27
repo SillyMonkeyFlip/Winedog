@@ -47,6 +47,7 @@ async function route(request, env) {
   if (m === 'GET' && path === '/api/me') return me(request, env);
   if (m === 'POST' && path === '/api/logout') return logout(request, env);
   if (m === 'GET' && path === '/api/transcript') return transcript(request, env, url);
+  if (m === 'GET' && path === '/api/storyboard') return storyboard(request, env, url);
 
   // Admin
   if (m === 'POST' && path === '/api/admin/login') return adminLogin(request, env);
@@ -146,6 +147,81 @@ async function requireUser(request, env) {
 
 function publicAccount(a) {
   return { email: a.email, name: a.name, role: a.role };
+}
+
+// ---------------------------------------------------------------- YouTube storyboards
+// YouTube makes small preview frames of every video (the pictures you see when you
+// hover the progress bar). Ambient light uses them so the glow follows the video.
+// This only looks up where those pictures are; the browser loads them from YouTube.
+
+async function storyboard(request, env, url) {
+  await requireUser(request, env);
+  const id = url.searchParams.get('v') || '';
+  if (!/^[\w-]{11}$/.test(id)) throw new HttpError(400, 'Bad video id.');
+
+  const cacheKey = new Request(`https://winedog-cache/storyboard/${id}`);
+  const cache = caches.default;
+  const hit = await cache.match(cacheKey);
+  if (hit) return hit;
+
+  let spec = await specFromWatchPage(id);
+  if (!spec) spec = await specFromAppApi(id);
+  const parsed = spec ? parseStoryboardSpec(spec) : null;
+  if (!parsed || !parsed.levels.length) throw new HttpError(404, 'No preview frames for this video.');
+
+  const res = json(parsed);
+  res.headers.set('Cache-Control', 'public, max-age=21600');
+  await cache.put(cacheKey, res.clone());
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
+}
+
+async function specFromWatchPage(id) {
+  try {
+    const r = await fetch(`https://www.youtube.com/watch?v=${id}&hl=en`, {
+      headers: { 'User-Agent': YT_UA, 'Accept-Language': 'en-US,en;q=0.9', Cookie: 'CONSENT=YES+1; SOCS=CAI' },
+    });
+    if (!r.ok) return null;
+    const html = await r.text();
+    const m = html.match(/"playerStoryboardSpecRenderer":\{"spec":"((?:[^"\\]|\\.)*)"/);
+    return m ? JSON.parse(`"${m[1]}"`) : null;
+  } catch { return null; }
+}
+
+async function specFromAppApi(id) {
+  try {
+    const r = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'com.google.android.youtube/19.44.38 (Linux; U; Android 14) gzip' },
+      body: JSON.stringify({
+        videoId: id,
+        context: { client: { clientName: 'ANDROID', clientVersion: '19.44.38', androidSdkVersion: 34, hl: 'en', gl: 'US' } },
+      }),
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data?.storyboards?.playerStoryboardSpecRenderer?.spec || null;
+  } catch { return null; }
+}
+
+// Spec looks like:
+//   https://i.ytimg.com/sb/ID/storyboard3_L$L/$N.jpg?sqp=...|48#27#100#10#10#0#default#rs$AB|80#45#123#10#10#2000#M$M#rs$CD|...
+// Each part after the first: width#height#frames#columns#rows#ms-per-frame#page-name#signature.
+// Returns page URL templates with {page} where the sheet number goes.
+export function parseStoryboardSpec(spec) {
+  const parts = String(spec).split('|');
+  const base = parts.shift();
+  if (!/^https:\/\/i\d*\.ytimg\.com\//.test(base)) return null;
+  const levels = [];
+  parts.forEach((p, L) => {
+    const [w, h, count, cols, rows, interval, name, sigh] = p.split('#');
+    const n = { w: +w, h: +h, count: +count, cols: +cols, rows: +rows, interval: +interval };
+    if (!n.w || !n.h || !n.count || !n.cols || !n.rows) return;
+    let u = base.replace('$L', String(L)).replace('$N', name.includes('$M') ? name.replace('$M', '{page}') : name);
+    if (sigh) u += (u.includes('?') ? '&' : '?') + 'sigh=' + encodeURIComponent(sigh);
+    levels.push({ ...n, url: u });
+  });
+  return { levels };
 }
 
 // ---------------------------------------------------------------- YouTube transcripts
