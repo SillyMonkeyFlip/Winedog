@@ -118,7 +118,7 @@
                   {
                       "name":  "Gladihoppers",
                       "path":  "Gladihoppers",
-                      "icon":  "screenshots/1.jpg"
+                      "icon":  null
                   },
                   {
                       "name":  "Go Fish",
@@ -189,6 +189,21 @@
                       "name":  "Space Waves",
                       "path":  "Space Waves",
                       "icon":  "icon.png"
+                  },
+                  {
+                      "name":  "Subway Surfers Bejing",
+                      "path":  "Subway Surfers Bejing",
+                      "icon":  "images.png"
+                  },
+                  {
+                      "name":  "Subway Surfers Havana",
+                      "path":  "Subway Surfers Havana",
+                      "icon":  null
+                  },
+                  {
+                      "name":  "Subway Surfers Winter Holiday",
+                      "path":  "Subway Surfers Winter Holiday",
+                      "icon":  null
                   },
                   {
                       "name":  "Tetris",
