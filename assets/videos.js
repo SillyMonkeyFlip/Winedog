@@ -467,6 +467,73 @@
     } catch { toast("Couldn't copy. Your browser blocked it."); }
   });
 
+  // ---------------------------------------------------------------- pop out
+  // Opens the video in a small always-on-top window (Chrome's picture-in-picture window),
+  // or a normal small popup in browsers without it. It picks up where you were, and when
+  // the small window closes, the video here continues from where it got to.
+
+  let pip = null;
+
+  async function popOut() {
+    if (!current) return toast('Play a video first');
+    if (pip) { pip.close(); return; }
+    const t = Math.floor(now());
+    const p = new URLSearchParams({ autoplay: '1', start: String(t), rel: '0', playsinline: '1', enablejsapi: '1', origin: location.origin, iv_load_policy: '3' });
+    if (current.list) p.set('list', current.list);
+    const src = `https://www.youtube-nocookie.com/embed/${current.id || ''}?${p}`;
+    try { player?.pauseVideo?.(); } catch {}
+
+    if (!window.documentPictureInPicture) {
+      const w = window.open(src, 'wd-popout', 'popup,width=640,height=360');
+      if (!w) toast('Your browser blocked the pop-out window.');
+      return;
+    }
+
+    let lastTime = t;
+    let lastId = current.id;
+    try {
+      pip = await documentPictureInPicture.requestWindow({ width: 480, height: 270 });
+    } catch {
+      toast("Couldn't open the pop-out window.");
+      return;
+    }
+    const doc = pip.document;
+    doc.title = $('vid-title').textContent || 'WineDog video';
+    doc.body.style.cssText = 'margin:0;background:#000;overflow:hidden';
+    const f = doc.createElement('iframe');
+    f.src = src;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    f.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0';
+    doc.body.append(f);
+
+    // Ask the player to report its time, so the main page can continue from there.
+    const listen = () => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'wdpip', channel: 'widget' }), '*'); } catch {} };
+    f.addEventListener('load', () => { listen(); setTimeout(listen, 1000); });
+    pip.addEventListener('message', (e) => {
+      if (!/youtube(-nocookie)?\.com$/.test(new URL(e.origin).hostname)) return;
+      let d; try { d = JSON.parse(e.data); } catch { return; }
+      const info = d?.info;
+      if (info && typeof info.currentTime === 'number') lastTime = info.currentTime;
+      if (info?.videoData?.video_id) lastId = info.videoData.video_id;
+    });
+    $('vid-popout').classList.add('on');
+    $('vid-popout').title = 'Bring the video back';
+
+    pip.addEventListener('pagehide', () => {
+      pip = null;
+      $('vid-popout').classList.remove('on');
+      $('vid-popout').title = 'Pop out (keeps playing in a small window on top)';
+      if (lastId && current && lastId !== current.id && current.list) { current = { ...current, id: lastId }; afterVideoChange(); }
+      try {
+        if (lastId && current && lastId === current.id) player.seekTo(lastTime, true);
+        player.playVideo();
+      } catch {}
+    });
+  }
+
+  $('vid-popout').addEventListener('click', popOut);
+
   window.WDAmbient?.attach(() => player);
 
   window.WDVideos = {
