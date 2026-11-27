@@ -3,227 +3,368 @@
                   {
                       "name":  "1v1.LOL",
                       "path":  "1v1lol",
-                      "icon":  "1v1lol.png"
+                      "icon":  "1v1lol.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "2048",
                       "path":  "2048",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Aim Trainer",
                       "path":  "Aim Trainer",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Baldi\u0027s Basics 1.2.2",
                       "path":  "Baldis Basics/1.2.2",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Baldi\u0027s Basics 1.4.5",
                       "path":  "Baldis Basics/1.4.5",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Baldi\u0027s Basics Camping Demo",
                       "path":  "Baldis Basics/Camping Demo",
-                      "icon":  "cover.jpg"
+                      "icon":  "cover.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Baldi\u0027s Basics: Joseph Is Real",
                       "path":  "Baldis Basics/Joseph Is Real",
-                      "icon":  "cover.webp"
+                      "icon":  "cover.webp",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Basket Bros",
                       "path":  "basketbros-io",
-                      "icon":  "thumb.jpg"
+                      "icon":  "thumb.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Classic Minecraft",
                       "path":  "Classic Minecraft",
-                      "icon":  "cover.jpg"
+                      "icon":  "cover.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Cookie Clicker",
                       "path":  "cookie-clicker",
-                      "icon":  "cookie-clicker.jpg"
+                      "icon":  "cookie-clicker.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "CPS Test",
                       "path":  "CPS Test",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Crossyroad",
                       "path":  "crossyroad",
-                      "icon":  "crossyroad.png"
+                      "icon":  "crossyroad.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Cubefield",
                       "path":  "cubefield",
-                      "icon":  "assets/unnamed.png"
+                      "icon":  "assets/cubefield.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Death Run 3D",
                       "path":  "death-run-3d",
-                      "icon":  "TemplateData/y8-logo.png"
+                      "icon":  "img/death.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Dino",
                       "path":  "Dino",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Doodle Jump",
                       "path":  "Doodle Jump",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Escapingtheprison",
                       "path":  "escapingtheprison",
-                      "icon":  "escapingtheprison.jpg"
+                      "icon":  "escapingtheprison.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Flappy Bird",
                       "path":  "Flappy Bird",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Fnaf",
+                      "path":  "Fnaf",
+                      "icon":  "images(3).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Fnaf 2",
+                      "path":  "Fnaf 2",
+                      "icon":  "FNaF2-MobileIcon.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Fnaf 3",
+                      "path":  "Fnaf 3",
+                      "icon":  "unnamed.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Fnaf 4",
+                      "path":  "Fnaf 4",
+                      "icon":  "81AE4nV6jgL.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "FNAF Sister Location",
+                      "path":  "FNAF Sister Location",
+                      "icon":  "unnamed(1).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "FNAF UCN",
+                      "path":  "FNAF UCN",
+                      "icon":  "unnamed(2).png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "FNF: Mario\u0027s Madness",
                       "path":  "FNF Mario Maddness",
-                      "icon":  null
+                      "icon":  "images.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "FNF: Nocturnal Protocol",
                       "path":  "FNF/Nocturnal Protocall",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "FNF: The Lion\u0027s Mouth",
                       "path":  "FNF/The Lions Mouth",
-                      "icon":  "cover.jpg"
+                      "icon":  "cover.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Fruit Ninja",
                       "path":  "fruitninja",
-                      "icon":  "FruitNinjaTeaser.jpg"
+                      "icon":  "FruitNinjaTeaser.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Geometry Dash",
                       "path":  "GeometryDash",
-                      "icon":  "images.jpg"
+                      "icon":  "images.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Gladihoppers",
                       "path":  "Gladihoppers",
-                      "icon":  null
+                      "icon":  "1.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Go Fish",
                       "path":  "Go Fish",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Helix Jump",
+                      "path":  "Helix Jump",
+                      "icon":  "images(5).png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Hextris",
                       "path":  "hextris",
-                      "icon":  "images/hextris-logo.png"
+                      "icon":  "favicon.ico",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "HTML Viewer",
                       "path":  "HTML Viewer",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Jetpack Joyride",
                       "path":  "jetpack-joyride",
-                      "icon":  "splash.jpg"
+                      "icon":  "splash.jpg",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Little Alchemy 2",
+                      "path":  "Little Alchemy 2",
+                      "icon":  "images(1).png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Minecraft PE 0.6.1",
                       "path":  "MCPE 0.6.1",
-                      "icon":  "cover.jpg"
+                      "icon":  "cover.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Minesweeper",
                       "path":  "Minesweeper",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Monkey Mart",
                       "path":  "MonkeyMart",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Paper.io 2",
                       "path":  "paperio2",
-                      "icon":  "images/icon192.png"
+                      "icon":  "images/icon512.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "PVZ Gardenless",
+                      "path":  "PVZ Gardenless",
+                      "icon":  "who-else-thinks-pvz-2-gardendless-should-be-the-default-v0-66majjg90u6f1.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Rarest",
                       "path":  "Rarest",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Sans Boss Fight",
                       "path":  "SansBossfight",
-                      "icon":  null
+                      "icon":  "images.jpg",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Slope",
                       "path":  "slope",
-                      "icon":  "slope.jpg"
+                      "icon":  "slope.jpg",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "SM64",
+                      "path":  "SM64",
+                      "icon":  "images(2).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "SMB",
+                      "path":  "SMB",
+                      "icon":  "SMBiOS_Banner.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Snake",
                       "path":  "Snake",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Snow Rider 3D",
                       "path":  "snowrider3d",
-                      "icon":  "TemplateData/logo.png"
+                      "icon":  "TemplateData/logo.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Space Waves",
                       "path":  "Space Waves",
-                      "icon":  "icon.png"
+                      "icon":  "icon.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Stickman Hook",
+                      "path":  "Stickman Hook",
+                      "icon":  "stickman-hook-logo.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Subway Surfers Bejing",
                       "path":  "Subway Surfers Bejing",
-                      "icon":  "images.png"
+                      "icon":  "images.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Subway Surfers Havana",
                       "path":  "Subway Surfers Havana",
-                      "icon":  null
+                      "icon":  "Havana2025Graffiti.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Subway Surfers Winter Holiday",
                       "path":  "Subway Surfers Winter Holiday",
-                      "icon":  null
+                      "icon":  "6a1acda2a3d93_1780141474.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Super Hot",
+                      "path":  "Super Hot",
+                      "icon":  "bcPCs06SjrXaOxa2oeuk2OBD.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Temple Run 2",
+                      "path":  "Temple Run 2",
+                      "icon":  "temple-run-2-logo.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Tetris",
                       "path":  "Tetris",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Tomb of the Mask",
+                      "path":  "Tomb of the Mask",
+                      "icon":  "images(4).png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Typing Test",
                       "path":  "Typing Test",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Uno",
                       "path":  "Uno",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Webfishing",
+                      "path":  "Webfishing",
+                      "icon":  "images.png",
+                      "iconAuto":  true
                   },
                   {
                       "name":  "Wordle Unlimited",
                       "path":  "Wordle Unlimited",
-                      "icon":  "cover.png"
+                      "icon":  "cover.png",
+                      "iconAuto":  true
                   }
               ]
 }

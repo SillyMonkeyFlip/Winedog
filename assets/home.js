@@ -4,15 +4,29 @@
   const $ = (id) => document.getElementById(id);
   let clockTimer = null;
 
+  // Some phones block site storage (private browsing, "block all cookies").
+  // Fall back to remembering the sign-in for this visit only, instead of failing.
+  const memory = {};
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return memory[k] ?? null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { memory[k] = v; } },
+    remove(k) { try { localStorage.removeItem(k); } catch {} delete memory[k]; },
+  };
+
   async function api(path, opts = {}) {
-    const token = localStorage.getItem(KEY);
-    const res = await fetch(API + path, {
-      ...opts,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: 'Bearer ' + token } : {}),
-      },
-    });
+    const token = store.get(KEY);
+    let res;
+    try {
+      res = await fetch(API + path, {
+        ...opts,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: 'Bearer ' + token } : {}),
+        },
+      });
+    } catch (e) {
+      throw Object.assign(new Error('network'), { network: true });
+    }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw Object.assign(new Error(data.error || 'Something went wrong.'), { status: res.status });
     return data;
@@ -24,13 +38,22 @@
     $('code').focus();
   }
 
+  // Extras (greeting, clock, games, intro) must never stop someone from getting in.
+  const safely = (fn) => { try { fn(); } catch (e) { console.error(e); } };
+
   function showHome(data) {
     $('login').hidden = true;
     $('home-content').innerHTML = data.home; // HTML from our own Worker
-    showGreeting(data.account);
     $('home').hidden = false;
-    startClock();
-    window.WineDogGames?.start();
+    safely(() => showGreeting(data.account));
+    safely(startClock);
+    safely(() => window.WineDogGames?.start());
+  }
+
+  function errorText(e, fallback) {
+    if (e.network) return 'Could not reach the server. Check your connection, or this network may block it.';
+    if (e.status) return e.message;
+    return `${fallback} (${e.message || e})`;
   }
 
   // "Good evening, Sam" above the clock. Uses the name from the dev panel,
@@ -88,15 +111,15 @@
   }
 
   async function boot() {
-    if (!localStorage.getItem(KEY)) return showLogin();
+    if (!store.get(KEY)) return showLogin();
     try {
       const data = await api('/api/me');
-      intro('open');
+      safely(() => intro('open'));
       showHome(data);
     } catch (e) {
-      if (e.status === 401) localStorage.removeItem(KEY);
+      if (e.status === 401) store.remove(KEY);
       showLogin();
-      if (e.status !== 401) $('login-error').textContent = 'Could not reach the server. Try again shortly.';
+      if (e.status !== 401) $('login-error').textContent = errorText(e, 'Something went wrong');
     }
   }
 
@@ -110,13 +133,13 @@
         method: 'POST',
         body: JSON.stringify({ code: $('code').value }),
       });
-      localStorage.setItem(KEY, r.token);
+      store.set(KEY, r.token);
       $('code').value = '';
       const data = await api('/api/me');
-      intro('login');
+      safely(() => intro('login'));
       showHome(data);
     } catch (e) {
-      $('login-error').textContent = e.status ? e.message : 'Could not reach the server.';
+      $('login-error').textContent = errorText(e, 'Something went wrong signing in');
     } finally {
       btn.disabled = false;
     }
@@ -124,7 +147,7 @@
 
   $('logout').addEventListener('click', async () => {
     try { await api('/api/logout', { method: 'POST' }); } catch {}
-    localStorage.removeItem(KEY);
+    store.remove(KEY);
     clearInterval(clockTimer);
     window.WineDogGames?.stop();
     $('home-content').innerHTML = '';
