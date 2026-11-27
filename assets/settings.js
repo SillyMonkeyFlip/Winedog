@@ -16,6 +16,7 @@
     $('set-tab-title').value = s.tabTitle || '';
     $('tab-preview-title').textContent = s.tabTitle || 'WineDog';
     $('tab-preview-icon').src = s.tabIcon || S.DEFAULT_ICON;
+    document.querySelectorAll('.preset').forEach((b) => b.classList.toggle('active', b.dataset.icon === s.tabIcon && b.dataset.name === s.tabTitle));
     $('set-clock-24').checked = !!s.clock24;
     $('set-clock-seconds').checked = s.clockSeconds !== false;
     try { $('set-muted').checked = !!JSON.parse(localStorage.getItem('wd_muted')); } catch { $('set-muted').checked = false; }
@@ -62,6 +63,41 @@
       toast("That file couldn't be used as a picture.");
     }
   });
+
+  // Preset tab looks: one folder per preset in "Preset Tab Looks" (folder name = tab name, image = tab picture).
+  // The list comes from Preset Tab Looks/presets.json, which "Update Games.bat" rebuilds.
+  const PRESET_DIR = '/Preset Tab Looks/';
+  fetch(encodeURI(PRESET_DIR + 'presets.json'), { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((data) => {
+      const list = (data && data.presets) || [];
+      if (!list.length) return;
+      const grid = $('tab-presets');
+      for (const p of list) {
+        const icon = encodeURI(PRESET_DIR + p.icon);
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'preset';
+        b.dataset.name = p.name;
+        b.dataset.icon = icon;
+        b.title = `Make this tab look like ${p.name}`;
+        const img = document.createElement('img');
+        img.src = icon;
+        img.alt = '';
+        const label = document.createElement('span');
+        label.textContent = p.name;
+        b.append(img, label);
+        b.addEventListener('click', () => {
+          S.set({ tabTitle: p.name, tabIcon: icon });
+          render();
+          toast(`Tab now looks like ${p.name}`);
+        });
+        grid.append(b);
+      }
+      $('tab-presets-field').hidden = false;
+      render();
+    })
+    .catch(() => {});
 
   $('set-tab-icon-clear').addEventListener('click', () => { S.set({ tabIcon: null }); render(); });
   $('set-tab-reset').addEventListener('click', () => { S.set({ tabIcon: null, tabTitle: null }); render(); toast('Tab look reset'); });

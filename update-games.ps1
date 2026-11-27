@@ -86,8 +86,25 @@ $json = [ordered]@{ games = @($sorted) } | ConvertTo-Json -Depth 5
 $gone = @($existing.Keys | Where-Object { $p = $_; -not ($list | Where-Object { $_.path -eq $p }) })
 foreach ($p in $gone) { Write-Host "  - $($existing[$p].name) (folder no longer there)" -ForegroundColor Yellow }
 
+# Rebuild the tab look presets list (Preset Tab Looks\presets.json).
+# Each folder is a preset: the folder name is the tab name, its .png or .ico is the tab picture.
+$presetDir = Join-Path $root 'Preset Tab Looks'
+$presetCount = 0
+if (Test-Path -LiteralPath $presetDir) {
+  $presets = New-Object System.Collections.ArrayList
+  foreach ($d in Get-ChildItem -LiteralPath $presetDir -Directory | Sort-Object Name) {
+    $img = Get-ChildItem -LiteralPath $d.FullName -File | Where-Object { '.png', '.ico' -contains $_.Extension.ToLower() } | Sort-Object @{ Expression = { $_.Extension.ToLower() -ne '.png' } }, Name | Select-Object -First 1
+    if (-not $img) { Write-Host "  ! Preset '$($d.Name)' has no .png or .ico, skipped." -ForegroundColor Yellow; continue }
+    [void]$presets.Add([ordered]@{ name = $d.Name; icon = "$($d.Name)/$($img.Name)" })
+  }
+  $presetCount = $presets.Count
+  $pjson = [ordered]@{ presets = @($presets) } | ConvertTo-Json -Depth 5
+  [IO.File]::WriteAllText((Join-Path $presetDir 'presets.json'), $pjson, (New-Object System.Text.UTF8Encoding $false))
+}
+
 Write-Host ""
 Write-Host "  $found games listed ($added new, $($gone.Count) removed)." -ForegroundColor Cyan
+Write-Host "  $presetCount tab look presets listed." -ForegroundColor Cyan
 Write-Host "  To rename a game or change its picture, edit Games\games.json, then run this again."
 Write-Host "  Commit and push in GitHub Desktop to put the changes online."
 Write-Host ""

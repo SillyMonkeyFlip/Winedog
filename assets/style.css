@@ -210,6 +210,11 @@ p.small { margin: 0 0 16px; }
 .fake-tab img { width: 16px; height: 16px; object-fit: contain; }
 .fake-tab span:first-of-type { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fake-x { color: var(--muted); }
+.preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.preset { display: flex; align-items: center; gap: 8px; padding: 8px 10px; font-size: 13px; text-align: left; overflow: hidden; }
+.preset img { width: 16px; height: 16px; object-fit: contain; flex: none; }
+.preset span { overflow: hidden; text-overflow: ellipsis; }
+.preset.active { border-color: var(--accent); }
 .filebtn {
   display: inline-flex; align-items: center; margin: 0; font-size: 13px; color: #0b0b0d; background: var(--accent);
   padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; letter-spacing: 0;
