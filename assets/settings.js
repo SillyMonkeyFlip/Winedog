@@ -78,6 +78,7 @@
     $('set-tab-title').value = s.tabTitle || '';
     $('tab-preview-title').textContent = s.tabTitle || 'WineDog';
     $('tab-preview-icon').src = s.tabIcon || S.DEFAULT_ICON;
+    renderPresets();
     $('set-clock-24').checked = !!s.clock24;
     $('set-clock-seconds').checked = s.clockSeconds !== false;
     document.querySelectorAll('#set-intro button').forEach((b) => b.classList.toggle('on', b.dataset.v === (s.intro || 'login')));
@@ -107,6 +108,51 @@
     });
   }
 
+  // ---------------------------------------------------------------- tab presets
+  // Listed in "Tab Presets/presets.json" by Update Tab Presets.bat: one per folder,
+  // the folder name is the tab name and its picture is the icon.
+  const PRESET_DIR = '/Tab Presets/';
+  let presets = null;
+
+  async function loadPresets() {
+    if (presets) return presets;
+    try {
+      const r = await fetch(encodeURI(PRESET_DIR + 'presets.json'), { cache: 'no-cache' });
+      presets = r.ok ? ((await r.json()).presets || []) : [];
+    } catch { presets = []; }
+    return presets;
+  }
+
+  async function renderPresets() {
+    const list = await loadPresets();
+    const grid = $('tab-presets');
+    $('tab-presets-field').hidden = !list.length;
+    const s = S.get();
+    grid.replaceChildren(...list.map((p) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'tab-preset';
+      b.classList.toggle('on', s.tabPreset === p.name && s.tabTitle === p.name);
+      const img = document.createElement('img');
+      img.alt = '';
+      img.src = PRESET_DIR.replace(/ /g, '%20') + p.icon.split('/').map(encodeURIComponent).join('/');
+      const name = document.createElement('span');
+      name.textContent = p.name;
+      b.append(img, name);
+      b.addEventListener('click', async () => {
+        try {
+          const blob = await (await fetch(img.src)).blob();
+          S.set({ tabTitle: p.name, tabIcon: await toIcon(blob), tabPreset: p.name });
+          render();
+          toast(`Tab look: ${p.name}`);
+        } catch {
+          toast("That preset's picture couldn't be loaded.");
+        }
+      });
+      return b;
+    }));
+  }
+
   $('set-tab-title').addEventListener('input', (e) => {
     S.set({ tabTitle: e.target.value.trim() });
     $('tab-preview-title').textContent = e.target.value.trim() || 'WineDog';
@@ -127,7 +173,7 @@
   });
 
   $('set-tab-icon-clear').addEventListener('click', () => { S.set({ tabIcon: null }); render(); });
-  $('set-tab-reset').addEventListener('click', () => { S.set({ tabIcon: null, tabTitle: null }); render(); toast('Tab look reset'); });
+  $('set-tab-reset').addEventListener('click', () => { S.set({ tabIcon: null, tabTitle: null, tabPreset: null }); render(); toast('Tab look reset'); });
 
   $('set-clock-24').addEventListener('change', (e) => S.set({ clock24: e.target.checked }));
   $('set-clock-seconds').addEventListener('change', (e) => S.set({ clockSeconds: e.target.checked }));
