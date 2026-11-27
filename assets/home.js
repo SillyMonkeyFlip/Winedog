@@ -27,9 +27,35 @@
   function showHome(data) {
     $('login').hidden = true;
     $('home-content').innerHTML = data.home; // HTML from our own Worker
+    showGreeting(data.account);
     $('home').hidden = false;
     startClock();
     window.WineDogGames?.start();
+  }
+
+  // "Good evening, Sam" above the clock. Uses the name from the dev panel,
+  // or the start of the email if no name was set.
+  let greetName = '';
+  function showGreeting(account) {
+    const a = account || {};
+    greetName = (a.name || '').trim() || String(a.email || '').split('@')[0];
+    const wrap = document.querySelector('#home-content .clock-wrap');
+    if (!wrap) return;
+    let g = $('greeting');
+    if (!g) {
+      g = document.createElement('div');
+      g.id = 'greeting';
+      g.className = 'greeting';
+      wrap.prepend(g);
+    }
+    updateGreeting();
+  }
+  function updateGreeting() {
+    const g = $('greeting');
+    if (!g) return;
+    const h = new Date().getHours();
+    const part = h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Good night';
+    g.textContent = greetName ? `${part}, ${greetName}` : part; // textContent, so names can't inject HTML
   }
 
   function startClock() {
@@ -43,16 +69,30 @@
       const opts = { hour: '2-digit', minute: '2-digit', hour12: !set.clock24 };
       if (set.clockSeconds !== false) opts.second = '2-digit';
       c.textContent = now.toLocaleTimeString([], opts);
+      if (now.getSeconds() === 0) updateGreeting();
       if (d) d.textContent = now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     };
     tick();
     clockTimer = setInterval(tick, 1000);
   }
 
+  // Intro animation. Setting "intro": "login" (default), "open" (every visit) or "off".
+  function intro(reason) {
+    const mode = (window.WDSettings?.get().intro) || 'login';
+    if (mode === 'off' || !window.WDSplash) return;
+    if (reason === 'open') {
+      if (mode !== 'open' || sessionStorage.getItem('wd_intro_seen')) return;
+    }
+    sessionStorage.setItem('wd_intro_seen', '1');
+    window.WDSplash.play();
+  }
+
   async function boot() {
     if (!localStorage.getItem(KEY)) return showLogin();
     try {
-      showHome(await api('/api/me'));
+      const data = await api('/api/me');
+      intro('open');
+      showHome(data);
     } catch (e) {
       if (e.status === 401) localStorage.removeItem(KEY);
       showLogin();
@@ -72,7 +112,9 @@
       });
       localStorage.setItem(KEY, r.token);
       $('code').value = '';
-      showHome(await api('/api/me'));
+      const data = await api('/api/me');
+      intro('login');
+      showHome(data);
     } catch (e) {
       $('login-error').textContent = e.status ? e.message : 'Could not reach the server.';
     } finally {

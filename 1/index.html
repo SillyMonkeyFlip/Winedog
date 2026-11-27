@@ -43,6 +43,10 @@
         <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9.5 5 2.5-5 2.5z"/></svg>
         <span>Videos</span>
       </a>
+      <a class="tab" href="#maps" data-tab="maps">
+        <svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+        <span>Maps</span>
+      </a>
       <a class="tab" href="#settings" data-tab="settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         <span>Settings</span>
@@ -88,6 +92,64 @@
           <div class="game-grid" id="all-grid"></div>
           <p class="muted" id="no-results" hidden>No games match your search.</p>
         </section>
+      </div>
+    </main>
+
+    <!-- Maps tab -->
+    <main class="view" id="view-maps" hidden>
+      <div class="maps-wrap" id="maps-wrap">
+        <header class="games-head">
+          <h1>Maps</h1>
+          <form class="vid-form" id="map-form" autocomplete="off">
+            <div class="search">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="map-q" placeholder="Search a place or address" spellcheck="false">
+            </div>
+            <button type="submit" class="primary small">Search</button>
+            <button type="button" class="small" id="map-dir-btn">Directions</button>
+          </form>
+        </header>
+        <form class="map-dir" id="map-dir" autocomplete="off" hidden>
+          <input id="map-from" placeholder="From (leave empty to use your location)" spellcheck="false">
+          <input id="map-to" placeholder="To" spellcheck="false">
+          <div class="seg" id="map-mode">
+            <button type="button" data-v="d">Drive</button><button type="button" data-v="w">Walk</button><button type="button" data-v="b">Bike</button><button type="button" data-v="r">Transit</button>
+          </div>
+          <button type="submit" class="primary small">Go</button>
+        </form>
+        <p class="error" id="map-error"></p>
+
+        <div class="vid-layout">
+          <div class="vid-main">
+            <div class="map-stage" id="map-stage">
+              <iframe id="map-frame" title="Map" referrerpolicy="no-referrer-when-downgrade" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div class="vid-bar">
+              <div class="seg" id="map-type">
+                <button type="button" data-v="m">Map</button><button type="button" data-v="k">Satellite</button><button type="button" data-v="h">Hybrid</button><button type="button" data-v="p">Terrain</button>
+              </div>
+              <div class="vid-title" id="map-title"></div>
+              <div class="rail-spacer"></div>
+              <button class="iconbtn" id="map-zoom-out" type="button" title="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+              <button class="iconbtn" id="map-zoom-in" type="button" title="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+              <button class="iconbtn" id="map-locate" type="button" title="My location"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>
+              <button class="iconbtn" id="map-save" type="button" title="Save place"><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg></button>
+              <button class="iconbtn" id="map-fullscreen" type="button" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+              <button class="iconbtn" id="map-open" type="button" title="Open in Google Maps"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
+              <button class="iconbtn labeled" id="map-earth" type="button" title="Open this place in Google Earth (new tab)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Earth</button>
+            </div>
+          </div>
+          <aside class="vid-side">
+            <section>
+              <h2>Saved places</h2>
+              <div id="map-saved"></div>
+            </section>
+            <section>
+              <h2>Recent <button type="button" class="linkbtn" id="map-clear-recent">Clear</button></h2>
+              <div id="map-recent"></div>
+            </section>
+          </aside>
+        </div>
       </div>
     </main>
 
@@ -156,7 +218,8 @@
               <h3>Ambient mode</h3>
               <div class="cc-row"><span>Strength</span><div class="seg" data-opt="amStrength"><button data-v="low">Low</button><button data-v="med">Medium</button><button data-v="high">High</button><button data-v="max">Max</button></div></div>
               <div class="cc-row"><span>Spread</span><div class="seg" data-opt="amSpread"><button data-v="s">Small</button><button data-v="m">Medium</button><button data-v="l">Large</button></div></div>
-              <div class="cc-row"><span>Blur</span><div class="seg" data-opt="amBlur"><button data-v="soft">Soft</button><button data-v="med">Medium</button><button data-v="strong">Strong</button></div></div>
+              <div class="cc-row"><span>Precision</span><div class="seg" data-opt="amPrecision"><button data-v="low">Low</button><button data-v="med">Medium</button><button data-v="high">High</button><button data-v="exact">Exact</button></div></div>
+              <div class="cc-row"><span>Speed</span><div class="seg" data-opt="amSpeed"><button data-v="slow">Slow</button><button data-v="normal">Normal</button><button data-v="fast">Fast</button><button data-v="instant">Instant</button></div></div>
               <div class="cc-row"><span>Color boost</span><div class="seg" data-opt="amColor"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
               <div class="cc-row"><span>Breathing</span><div class="seg" data-opt="amBreathe"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
               <div class="cc-row"><span>Dim page</span><div class="seg" data-opt="amDim"><button data-v="off">Off</button><button data-v="on">On</button></div></div>
@@ -248,6 +311,14 @@
         </section>
 
         <section class="panel">
+          <h2>Intro animation</h2>
+          <div class="seg" id="set-intro">
+            <button type="button" data-v="login">When I sign in</button><button type="button" data-v="open">Every visit</button><button type="button" data-v="off">Off</button>
+          </div>
+          <p><button type="button" class="small" id="set-intro-preview">Preview</button></p>
+        </section>
+
+        <section class="panel">
           <h2>Games</h2>
           <label class="check"><input type="checkbox" id="set-muted"> Mute game sound</label>
           <div class="row wrap-row">
@@ -292,9 +363,11 @@
 
   <div class="toast" id="toast" hidden></div>
 
+  <script src="/assets/splash.js"></script>
   <script src="/assets/home.js"></script>
   <script src="/assets/settings.js"></script>
   <script src="/assets/videos.js"></script>
+  <script src="/assets/maps.js"></script>
   <script src="/assets/games.js"></script>
 </body>
 </html>

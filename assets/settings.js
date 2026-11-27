@@ -80,6 +80,7 @@
     $('tab-preview-icon').src = s.tabIcon || S.DEFAULT_ICON;
     $('set-clock-24').checked = !!s.clock24;
     $('set-clock-seconds').checked = s.clockSeconds !== false;
+    document.querySelectorAll('#set-intro button').forEach((b) => b.classList.toggle('on', b.dataset.v === (s.intro || 'login')));
     try { $('set-muted').checked = !!JSON.parse(localStorage.getItem('wd_muted')); } catch { $('set-muted').checked = false; }
   }
 
@@ -130,6 +131,13 @@
 
   $('set-clock-24').addEventListener('change', (e) => S.set({ clock24: e.target.checked }));
   $('set-clock-seconds').addEventListener('change', (e) => S.set({ clockSeconds: e.target.checked }));
+  $('set-intro').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    S.set({ intro: b.dataset.v });
+    document.querySelectorAll('#set-intro button').forEach((x) => x.classList.toggle('on', x === b));
+  });
+  $('set-intro-preview').addEventListener('click', () => window.WDSplash?.play());
 
   $('set-muted').addEventListener('change', (e) => {
     localStorage.setItem('wd_muted', JSON.stringify(e.target.checked));

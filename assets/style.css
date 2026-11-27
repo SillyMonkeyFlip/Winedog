@@ -62,6 +62,7 @@ button:disabled { opacity: .5; cursor: default; }
 .linkbtn { background: none; border: none; color: var(--muted); padding: 0; font-size: 13px; }
 .linkbtn:hover { color: var(--text); }
 .clock-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.greeting { font-size: clamp(18px, 2.6vw, 28px); font-weight: 400; color: var(--muted); margin-bottom: 6px; text-align: center; padding: 0 16px; overflow-wrap: anywhere; }
 .clock { font-size: clamp(56px, 14vw, 160px); font-weight: 200; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .date { color: var(--muted); font-size: clamp(14px, 2vw, 18px); margin-top: 8px; letter-spacing: .08em; }
 
@@ -290,15 +291,21 @@ html:not([data-theme="midnight"]):not([data-theme="oled"]) .tab.active { color: 
 /* spread */
 .videos-wrap[data-am-spread="s"] .vid-ambient { inset: -2%; }
 .videos-wrap[data-am-spread="l"] .vid-ambient { inset: -14% -10%; }
-/* blur */
-.videos-wrap[data-am-blur="soft"] .vid-ambient img { filter: blur(30px) saturate(1.6); }
-.videos-wrap[data-am-blur="strong"] .vid-ambient img { filter: blur(110px) saturate(1.6); }
-.videos-wrap[data-am-color="off"][data-am-blur="soft"] .vid-ambient img { filter: blur(30px); }
-.videos-wrap[data-am-color="off"][data-am-blur="med"] .vid-ambient img { filter: blur(60px); }
-.videos-wrap[data-am-color="off"][data-am-blur="strong"] .vid-ambient img { filter: blur(110px); }
+/* precision (how sharp the glow is) + color boost, via variables set below */
+.vid-ambient img { filter: blur(var(--am-blur, 60px)) saturate(var(--am-sat, 1.6)); transition: opacity var(--am-fade, 4s) ease; }
+.videos-wrap[data-am-precision="low"] { --am-blur: 110px; }
+.videos-wrap[data-am-precision="med"] { --am-blur: 60px; }
+.videos-wrap[data-am-precision="high"] { --am-blur: 28px; }
+.videos-wrap[data-am-precision="exact"] { --am-blur: 10px; }
+.videos-wrap[data-am-color="off"] { --am-sat: 1; }
+/* speed (how fast the glow changes) */
+.videos-wrap[data-am-speed="slow"] { --am-fade: 8s; --am-breathe: 12s; }
+.videos-wrap[data-am-speed="normal"] { --am-fade: 4s; --am-breathe: 7s; }
+.videos-wrap[data-am-speed="fast"] { --am-fade: 1.5s; --am-breathe: 4s; }
+.videos-wrap[data-am-speed="instant"] { --am-fade: .3s; --am-breathe: 2.5s; }
 /* breathing */
 @keyframes wd-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-.videos-wrap[data-am-breathe="on"].ambient-on .vid-ambient { animation: wd-breathe 7s ease-in-out infinite; }
+.videos-wrap[data-am-breathe="on"].ambient-on .vid-ambient { animation: wd-breathe var(--am-breathe, 7s) ease-in-out infinite; }
 /* dim page */
 #view-videos { transition: background .6s; }
 #view-videos:has(.videos-wrap[data-am-dim="on"].ambient-on) { background: rgba(0, 0, 0, .55); }
@@ -350,3 +357,23 @@ html:not([data-theme="midnight"]):not([data-theme="oled"]) .tab.active { color: 
 .tr-time { font-variant-numeric: tabular-nums; color: var(--accent); opacity: .8; font-size: 12px; padding-top: 1px; }
 .tr-line mark { background: rgba(245, 196, 81, .35); color: inherit; border-radius: 3px; }
 #vid-history-clear { margin-top: 10px; }
+
+/* ---------- maps ---------- */
+.maps-wrap { max-width: 1400px; margin: 0 auto; padding: 28px 32px 60px; }
+.map-stage { position: relative; height: calc(100vh - 260px); min-height: 360px; background: var(--panel); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+.map-stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.map-stage:fullscreen { border-radius: 0; border: 0; }
+.map-dir { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: -12px 0 18px; }
+.map-dir input { flex: 1 1 220px; }
+#maps-wrap .vid-bar { flex-wrap: wrap; }
+#maps-wrap .error:empty { display: none; }
+.map-place { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 13.5px; }
+.map-place:hover { background: var(--panel-2); }
+.map-place svg { width: 16px; height: 16px; flex: none; stroke: var(--muted); fill: none; stroke-width: 1.8; }
+.map-place span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#map-save.on { color: var(--accent); }
+#map-save.on svg { fill: currentColor; }
+@media (max-width: 640px) { .maps-wrap { padding: 20px 16px 40px; } .map-stage { height: calc(100vh - 340px); } }
+
+/* ---------- intro animation ---------- */
+.wd-splash { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9999; cursor: pointer; }

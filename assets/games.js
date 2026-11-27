@@ -208,8 +208,8 @@
   // ---------------------------------------------------------------- routing
 
   function show(view) {
-    for (const id of ['view-home', 'view-games', 'view-player', 'view-settings', 'view-videos']) $(id).hidden = id !== view;
-    const tab = { 'view-home': 'home', 'view-settings': 'settings', 'view-videos': 'videos' }[view] || 'games';
+    for (const id of ['view-home', 'view-games', 'view-player', 'view-settings', 'view-videos', 'view-maps']) $(id).hidden = id !== view;
+    const tab = { 'view-home': 'home', 'view-settings': 'settings', 'view-videos': 'videos', 'view-maps': 'maps' }[view] || 'games';
     if (view !== 'view-videos') window.WDVideos?.pause();
     document.querySelectorAll('.rail .tab[data-tab]').forEach((t) => t.classList.toggle('active', t.dataset.tab === tab));
   }
@@ -229,7 +229,10 @@
       return;
     }
     stopGame();
-    if (h === 'videos') {
+    if (h === 'maps') {
+      show('view-maps');
+      window.WDMaps?.show();
+    } else if (h === 'videos') {
       show('view-videos');
       window.WDVideos?.show();
     } else if (h === 'settings') {

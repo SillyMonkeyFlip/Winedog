@@ -10,12 +10,17 @@
   const DEFAULT_OPTS = {
     cc: false, ambient: true,
     ccSize: 'm', ccBg: 'box', ccPos: 'bottom', ccFont: 'sans', ccLang: 'en',
-    amStrength: 'med', amSpread: 'm', amBlur: 'med', amColor: 'on', amBreathe: 'off', amDim: 'off',
+    amStrength: 'med', amSpread: 'm', amPrecision: 'med', amSpeed: 'normal', amColor: 'on', amBreathe: 'off', amDim: 'off',
   };
 
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
   const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  const opts = () => ({ ...DEFAULT_OPTS, ...read(LS.opts, {}) });
+  const opts = () => {
+    const saved = read(LS.opts, {});
+    // Older versions had a "Blur" option; carry it over to "Precision".
+    if (saved.amBlur && !saved.amPrecision) saved.amPrecision = { soft: 'high', med: 'med', strong: 'low' }[saved.amBlur] || 'med';
+    return { ...DEFAULT_OPTS, ...saved };
+  };
   const setOpt = (patch) => { write(LS.opts, { ...read(LS.opts, {}), ...patch }); applyOpts(); };
 
   let player = null;
@@ -345,7 +350,7 @@
   function applyOpts() {
     const o = opts();
     const wrap = $('videos-wrap');
-    for (const k of ['ccSize', 'ccBg', 'ccPos', 'ccFont', 'amStrength', 'amSpread', 'amBlur', 'amColor', 'amBreathe', 'amDim']) wrap.dataset[k] = o[k];
+    for (const k of ['ccSize', 'ccBg', 'ccPos', 'ccFont', 'amStrength', 'amSpread', 'amPrecision', 'amSpeed', 'amColor', 'amBreathe', 'amDim']) wrap.dataset[k] = o[k];
     wrap.classList.toggle('ambient-on', !!o.ambient);
     $('vid-ambient-btn').classList.toggle('on', !!o.ambient);
     $('vid-ambient-btn').title = o.ambient ? 'Turn off ambient mode' : 'Ambient mode';
