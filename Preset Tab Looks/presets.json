@@ -1,36 +1,36 @@
 {
-  "presets": [
-    {
-      "name": "Blooket",
-      "icon": "Blooket/blooket.com-favicon-48x48.ico"
-    },
-    {
-      "name": "Canva",
-      "icon": "Canva/canva.com-favicon-193x192.png"
-    },
-    {
-      "name": "Clever",
-      "icon": "Clever/clever.com-favicon-270x270.png"
-    },
-    {
-      "name": "Gmail",
-      "icon": "Gmail/mail.google.com-app-icon-512x512.png"
-    },
-    {
-      "name": "Khan Academy",
-      "icon": "Khan Academy/khanacademy.org-favicon-32x32.ico"
-    },
-    {
-      "name": "McGrawHill",
-      "icon": "McGrawHill/mheducation.com-favicon-16x16.png"
-    },
-    {
-      "name": "StudySync",
-      "icon": "StudySync/studysync.com-favicon-64x64.ico"
-    },
-    {
-      "name": "Youtube",
-      "icon": "Youtube/youtube.com-app-icon-192x192.png"
-    }
-  ]
+    "presets":  [
+                    {
+                        "name":  "Blooket",
+                        "icon":  "Blooket/blooket.com-favicon-48x48.ico"
+                    },
+                    {
+                        "name":  "Canva",
+                        "icon":  "Canva/canva.com-favicon-193x192.png"
+                    },
+                    {
+                        "name":  "Clever",
+                        "icon":  "Clever/clever.com-favicon-270x270.png"
+                    },
+                    {
+                        "name":  "Gmail",
+                        "icon":  "Gmail/mail.google.com-app-icon-512x512.png"
+                    },
+                    {
+                        "name":  "Khan Academy",
+                        "icon":  "Khan Academy/khanacademy.org-favicon-32x32.ico"
+                    },
+                    {
+                        "name":  "McGrawHill",
+                        "icon":  "McGrawHill/mheducation.com-favicon-16x16.png"
+                    },
+                    {
+                        "name":  "StudySync",
+                        "icon":  "StudySync/studysync.com-favicon-64x64.ico"
+                    },
+                    {
+                        "name":  "Youtube",
+                        "icon":  "Youtube/youtube.com-app-icon-192x192.png"
+                    }
+                ]
 }
