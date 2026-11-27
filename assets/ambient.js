@@ -13,7 +13,7 @@
     strength: 85, spread: 40, blur: 45, edge: 70, fadeIn: 800,
     smooth: true, detail: 'high', fps: 30,
     brightness: 100, contrast: 100, saturation: 100, glowSat: 120,
-    shadow: true, page: 'dim',
+    shadow: true, page: 'dim', source: 'preview',
   };
   const read = () => { try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return { ...DEFAULTS }; } };
   let o = read();
@@ -78,6 +78,7 @@
   }
 
   function draw(t, dur) {
+    if (live && live.video.readyState >= 2 && live.video.videoWidth) return drawLive();
     const L = level();
     if (L) {
       let f = L.interval > 0 ? (t * 1000) / L.interval : dur ? (t / dur) * (L.count - 1) : 0;
@@ -108,6 +109,72 @@
     return true;
   }
 
+  // ---------------------------------------------------------------- live (exact) mode
+  // The browser can share a picture of this tab with the page itself (you pick "this tab"
+  // in the browser's share prompt). Cropped to the player, that is the real video picture,
+  // frame by frame, so the light matches exactly what's on screen, like the extension.
+
+  let live = null; // { stream, video, cropped }
+
+  async function startLive() {
+    if (live) return true;
+    if (!navigator.mediaDevices?.getDisplayMedia) { status('This browser can’t share a tab, so exact mode isn’t available here.'); return false; }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 30, displaySurface: 'browser' },
+        audio: false,
+        preferCurrentTab: true,
+        selfBrowserSurface: 'include',
+        surfaceSwitching: 'exclude',
+      });
+    } catch {
+      status('Exact mode needs you to share this tab. Using preview frames instead.');
+      return false;
+    }
+    const track = stream.getVideoTracks()[0];
+    let cropped = false;
+    if (window.CropTarget && track.cropTo) {
+      try { await track.cropTo(await CropTarget.fromElement($('vid-stage'))); cropped = true; } catch {}
+    }
+    const video = document.createElement('video');
+    video.muted = true;
+    video.playsInline = true;
+    video.srcObject = stream;
+    try { await video.play(); } catch {}
+    track.addEventListener('ended', () => stopLive(true));
+    live = { stream, video, cropped };
+    status('Exact mode is on. The light now follows the video picture itself.');
+    kick();
+    return true;
+  }
+
+  function stopLive(byBrowser) {
+    if (!live) return;
+    live.stream.getTracks().forEach((t) => t.stop());
+    live = null;
+    if (byBrowser && o.source === 'live') status('Tab sharing stopped. Using preview frames until you turn exact mode on again.');
+  }
+
+  function drawLive() {
+    const v = live.video;
+    ctx.globalAlpha = 1;
+    if (live.cropped) {
+      ctx.drawImage(v, 0, 0, cv.width, cv.height);
+    } else {
+      // No cropping support: cut the player out of the whole-tab picture ourselves.
+      const r = $('vid-stage').getBoundingClientRect();
+      const k = v.videoWidth / innerWidth;
+      ctx.drawImage(v, r.left * k, r.top * k, r.width * k, r.height * k, 0, 0, cv.width, cv.height);
+    }
+    return true;
+  }
+
+  function status(text) {
+    const el = $('am-status');
+    if (el) el.textContent = text || '';
+  }
+
   // ---------------------------------------------------------------- loop
 
   function loop(now) {
@@ -125,6 +192,7 @@
     } catch {}
     if (t !== rawT) { rawT = t; baseT = t; baseAt = now; }
     const est = playing ? Math.min(baseT + (now - baseAt) / 1000, baseT + 1.5) : baseT;
+    if (!dur && !live) return;
     if (draw(est, dur) && !shown) {
       shown = true;
       layer.style.opacity = String(o.strength / 100);
@@ -219,8 +287,25 @@
       set({ [seg.dataset.am]: v === 'true' ? true : v === 'false' ? false : /^\d+$/.test(v) ? Number(v) : v });
     });
   });
-  $('am-reset').addEventListener('click', () => set({ ...DEFAULTS, on: o.on }));
-  $('vid-ambient-btn').addEventListener('click', () => set({ on: !o.on }));
+  $('am-reset').addEventListener('click', () => { stopLive(); set({ ...DEFAULTS, on: o.on }); status(''); });
+  $('vid-ambient-btn').addEventListener('click', () => {
+    const on = !o.on;
+    set({ on });
+    if (!on) stopLive();
+    else if (o.source === 'live') startLive();
+  });
+  // Picking a source: "live" asks to share this tab right away (it needs a click to ask).
+  document.querySelector('#am-panel .seg[data-am="source"]').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-v]');
+    if (!b) return;
+    if (b.dataset.v === 'live') {
+      if (!o.on) set({ on: true });
+      await startLive();
+    } else {
+      stopLive();
+      status('');
+    }
+  });
   addEventListener('resize', () => { if (o.on) apply(); });
 
   window.WDAmbient = {

@@ -360,3 +360,5 @@ html:not([data-theme="midnight"]):not([data-theme="oled"]) .tab.active { color: 
 /* ---------- intro animation ---------- */
 .wd-splash { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9999; cursor: pointer; }
 #am-panel > h3:first-child { margin-top: 18px; }
+.am-note { margin: 6px 0 0; min-height: 0; }
+.am-note:empty { display: none; }
