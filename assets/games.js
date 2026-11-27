@@ -208,8 +208,9 @@
   // ---------------------------------------------------------------- routing
 
   function show(view) {
-    for (const id of ['view-home', 'view-games', 'view-player', 'view-settings']) $(id).hidden = id !== view;
-    const tab = view === 'view-home' ? 'home' : view === 'view-settings' ? 'settings' : 'games';
+    for (const id of ['view-home', 'view-games', 'view-player', 'view-settings', 'view-videos']) $(id).hidden = id !== view;
+    const tab = { 'view-home': 'home', 'view-settings': 'settings', 'view-videos': 'videos' }[view] || 'games';
+    if (view !== 'view-videos') window.WDVideos?.pause();
     document.querySelectorAll('.rail .tab[data-tab]').forEach((t) => t.classList.toggle('active', t.dataset.tab === tab));
   }
 
@@ -228,7 +229,10 @@
       return;
     }
     stopGame();
-    if (h === 'settings') {
+    if (h === 'videos') {
+      show('view-videos');
+      window.WDVideos?.show();
+    } else if (h === 'settings') {
       show('view-settings');
       window.WDSettingsPage?.render();
     } else if (h === 'games') {
@@ -311,6 +315,7 @@
     stop() {
       started = false;
       stopGame();
+      window.WDVideos?.pause();
       if (location.hash) history.replaceState(null, '', location.pathname);
     },
   };

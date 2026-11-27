@@ -22,12 +22,25 @@
     });
   }
 
+  const THEME_COLORS = {
+    midnight: '#0b0b0d', wine: '#140a0e', ocean: '#08111a', forest: '#0a120d',
+    violet: '#100b18', ember: '#140d08', oled: '#000000', light: '#f4f4f6',
+  };
+
+  function applyTheme() {
+    const t = get().theme || 'midnight';
+    document.documentElement.dataset.theme = t;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = THEME_COLORS[t] || THEME_COLORS.midnight;
+  }
+
   window.WDSettings = {
     get,
     set(patch) {
       const s = { ...get(), ...patch };
       for (const k of Object.keys(s)) if (s[k] === null || s[k] === '') delete s[k];
       localStorage.setItem(KEY, JSON.stringify(s));
+      applyTheme();
       applyTab();
       return s;
     },
@@ -35,8 +48,22 @@
     setTitle(t) { pageTitle = t; applyTab(); },
     applyTab,
     DEFAULT_ICON,
+    THEMES: Object.keys(THEME_COLORS),
   };
 
   document.querySelectorAll('link[rel~="icon"]').forEach((l) => { if (l.sizes?.value) l.dataset.sizes = l.sizes.value; });
+  applyTheme();
   applyTab();
+
+  // Register the service worker early so the site can be installed as an app.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {}));
+  }
+
+  // Chrome offers installing only through this event; keep it for the Install button.
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.__wdInstallPrompt = e;
+    window.dispatchEvent(new Event('wd-installable'));
+  });
 })();

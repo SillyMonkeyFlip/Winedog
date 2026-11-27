@@ -46,6 +46,7 @@ async function route(request, env) {
   if (m === 'POST' && path === '/api/login') return login(request, env);
   if (m === 'GET' && path === '/api/me') return me(request, env);
   if (m === 'POST' && path === '/api/logout') return logout(request, env);
+  if (m === 'GET' && path === '/api/transcript') return transcript(request, env, url);
 
   // Admin
   if (m === 'POST' && path === '/api/admin/login') return adminLogin(request, env);
@@ -145,6 +146,111 @@ async function requireUser(request, env) {
 
 function publicAccount(a) {
   return { email: a.email, name: a.name, role: a.role };
+}
+
+// ---------------------------------------------------------------- YouTube transcripts
+// Looks up a video's caption text so the Videos tab can show a transcript and its own captions.
+// Signed-in users only, so this can't be used as an open relay.
+
+const YT_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36';
+
+async function transcript(request, env, url) {
+  await requireUser(request, env);
+  const id = url.searchParams.get('v') || '';
+  if (!/^[\w-]{11}$/.test(id)) throw new HttpError(400, 'Bad video id.');
+  const want = (url.searchParams.get('lang') || 'en').slice(0, 12);
+
+  const cacheKey = new Request(`https://winedog-cache/transcript/${id}/${want}`);
+  const cache = caches.default;
+  const hit = await cache.match(cacheKey);
+  if (hit) return hit;
+
+  let tracks = await tracksFromWatchPage(id);
+  let result = tracks.length ? await fetchTrack(tracks, want) : null;
+  if (!result || !result.lines.length) {
+    // Second try through YouTube's app API, which sometimes returns captions the web page doesn't.
+    const appTracks = await tracksFromAppApi(id);
+    if (appTracks.length) { tracks = appTracks; result = await fetchTrack(tracks, want); }
+  }
+  if (!tracks.length) throw new HttpError(404, 'This video has no captions.');
+  if (!result || !result.lines.length) throw new HttpError(502, "YouTube didn't send the captions for this video. Try again later.");
+
+  const res = json({
+    lang: result.lang,
+    tracks: tracks.map((t) => ({ lang: t.languageCode, name: trackName(t), auto: t.kind === 'asr' })),
+    lines: result.lines,
+  });
+  res.headers.set('Cache-Control', 'public, max-age=86400');
+  await cache.put(cacheKey, res.clone());
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
+}
+
+function trackName(t) {
+  return t.name?.simpleText || t.name?.runs?.map((r) => r.text).join('') || t.languageCode;
+}
+
+async function tracksFromWatchPage(id) {
+  try {
+    const r = await fetch(`https://www.youtube.com/watch?v=${id}&hl=en`, {
+      headers: { 'User-Agent': YT_UA, 'Accept-Language': 'en-US,en;q=0.9', Cookie: 'CONSENT=YES+1; SOCS=CAI' },
+    });
+    if (!r.ok) return [];
+    const html = await r.text();
+    const i = html.indexOf('"captionTracks":');
+    if (i < 0) return [];
+    const start = html.indexOf('[', i);
+    let depth = 0, end = start;
+    for (; end < html.length; end++) {
+      const c = html[end];
+      if (c === '[') depth++;
+      else if (c === ']') { depth--; if (depth === 0) break; }
+    }
+    return JSON.parse(html.slice(start, end + 1));
+  } catch { return []; }
+}
+
+async function tracksFromAppApi(id) {
+  try {
+    const r = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'com.google.android.youtube/19.44.38 (Linux; U; Android 14) gzip' },
+      body: JSON.stringify({
+        videoId: id,
+        context: { client: { clientName: 'ANDROID', clientVersion: '19.44.38', androidSdkVersion: 34, hl: 'en', gl: 'US' } },
+      }),
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return data?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+  } catch { return []; }
+}
+
+async function fetchTrack(tracks, want) {
+  const pick =
+    tracks.find((t) => t.languageCode === want && t.kind !== 'asr') ||
+    tracks.find((t) => t.languageCode === want) ||
+    tracks.find((t) => t.languageCode?.startsWith(want.split('-')[0]) && t.kind !== 'asr') ||
+    tracks.find((t) => t.languageCode?.startsWith(want.split('-')[0])) ||
+    tracks.find((t) => t.kind !== 'asr') ||
+    tracks[0];
+  try {
+    const u = new URL(pick.baseUrl.replace(/\\u0026/g, '&'));
+    u.searchParams.set('fmt', 'json3');
+    const r = await fetch(u.toString(), { headers: { 'User-Agent': YT_UA } });
+    if (!r.ok) return null;
+    const text = await r.text();
+    if (!text.trim()) return null;
+    const data = JSON.parse(text);
+    const lines = [];
+    for (const ev of data.events || []) {
+      if (!ev.segs) continue;
+      const t = ev.segs.map((s) => s.utf8 || '').join('').replace(/\s+/g, ' ').trim();
+      if (!t) continue;
+      lines.push({ start: (ev.tStartMs || 0) / 1000, dur: (ev.dDurationMs || 2000) / 1000, text: t });
+    }
+    return { lang: pick.languageCode, lines };
+  } catch { return null; }
 }
 
 // ---------------------------------------------------------------- admin auth
