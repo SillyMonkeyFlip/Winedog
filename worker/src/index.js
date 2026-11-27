@@ -9,8 +9,7 @@ const ROLES = ['Normal', 'Special'];
 
 // Login rate limits (attempts per window)
 const LIMITS = {
-  loginEmail: { max: 5, windowSec: 15 * 60 },
-  loginIp: { max: 20, windowSec: 15 * 60 },
+  loginIp: { max: 10, windowSec: 15 * 60 },
   adminIp: { max: 5, windowSec: 15 * 60 },
 };
 
@@ -55,7 +54,7 @@ async function route(request, env) {
     if (m === 'POST' && path === '/api/admin/logout') return adminLogout(request, env);
     if (m === 'GET' && path === '/api/admin/accounts') return listAccounts(env);
     if (m === 'POST' && path === '/api/admin/accounts') return createAccount(request, env);
-    if (m === 'GET' && path === '/api/admin/random-code') return json({ code: randomCode() });
+    if (m === 'GET' && path === '/api/admin/random-code') return json({ code: await uniqueRandomCode(env) });
 
     let p;
     if ((p = match(path, '/api/admin/accounts/:id'))) {
@@ -88,22 +87,19 @@ function match(path, pattern) {
 
 async function login(request, env) {
   const body = await readJson(request);
-  const email = normEmail(body.email);
-  const code = String(body.code ?? '').trim();
-  if (!email || !code) throw new HttpError(400, 'Enter your email and code.');
+  // Codes are not case-sensitive: they're always stored and checked in capitals.
+  const code = String(body.code ?? '').trim().toUpperCase();
+  if (!code) throw new HttpError(400, 'Enter your code.');
 
   const ip = clientIp(request);
-  await checkLimit(env, `login-email:${email}`, LIMITS.loginEmail);
   await checkLimit(env, `login-ip:${ip}`, LIMITS.loginIp);
 
-  const account = await env.DB.prepare('SELECT * FROM accounts WHERE email = ?').bind(email).first();
-  const ok = account && !account.disabled && safeEqual(account.code, code);
-  if (!ok) {
-    await hitLimit(env, `login-email:${email}`, LIMITS.loginEmail);
+  const account = await env.DB.prepare('SELECT * FROM accounts WHERE code = ?').bind(code).first();
+  if (!account || account.disabled) {
     await hitLimit(env, `login-ip:${ip}`, LIMITS.loginIp);
-    throw new HttpError(401, 'That email and code do not match.');
+    throw new HttpError(401, 'That code is not valid.');
   }
-  await clearLimit(env, `login-email:${email}`);
+  await clearLimit(env, `login-ip:${ip}`);
 
   const token = randomToken();
   const now = nowSec();
@@ -201,7 +197,8 @@ async function createAccount(request, env) {
   const email = normEmail(body.email);
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError(400, 'Enter a valid email.');
   const role = ROLES.includes(body.role) ? body.role : 'Normal';
-  const code = body.code ? cleanCode(body.code) : randomCode();
+  const code = body.code ? cleanCode(body.code) : await uniqueRandomCode(env);
+  await assertCodeFree(env, code);
   const now = nowSec();
   const exists = await env.DB.prepare('SELECT id FROM accounts WHERE email = ?').bind(email).first();
   if (exists) throw new HttpError(409, 'An account with that email already exists.');
@@ -237,8 +234,9 @@ async function updateAccount(request, env, id) {
   }
   let logoutAll = false;
   if (body.code !== undefined && body.code !== '') {
-    const code = body.code === '__random__' ? randomCode() : cleanCode(body.code);
+    const code = body.code === '__random__' ? await uniqueRandomCode(env) : cleanCode(body.code);
     if (code !== account.code) {
+      await assertCodeFree(env, code, account.id);
       sets.push('code = ?'); vals.push(code);
       logoutAll = true; // changing the code logs them out everywhere
     }
@@ -389,9 +387,25 @@ function clientIp(request) {
 function normEmail(e) { return String(e ?? '').trim().toLowerCase(); }
 
 function cleanCode(c) {
-  const code = String(c).trim();
+  const code = String(c).trim().toUpperCase();
   if (code.length < 1 || code.length > 64) throw new HttpError(400, 'Code must be 1 to 64 characters.');
   return code;
+}
+
+async function assertCodeFree(env, code, exceptId = 0) {
+  const taken = await env.DB.prepare('SELECT id FROM accounts WHERE code = ? AND id != ?').bind(code, exceptId).first();
+  if (taken) throw new HttpError(409, 'Another account already uses that code. Codes must be unique.');
+}
+
+async function uniqueRandomCode(env) {
+  for (let len = 3; len <= 8; len++) {
+    for (let i = 0; i < 20; i++) {
+      const code = randomCode(len);
+      const taken = await env.DB.prepare('SELECT 1 FROM accounts WHERE code = ?').bind(code).first();
+      if (!taken) return code;
+    }
+  }
+  throw new HttpError(500, 'Could not find a free code.');
 }
 
 function randomCode(len = 3) {

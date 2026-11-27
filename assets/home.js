@@ -21,7 +21,7 @@
   function showLogin() {
     $('home').hidden = true;
     $('login').hidden = false;
-    $('email').focus();
+    $('code').focus();
   }
 
   function showHome(data) {
@@ -29,6 +29,7 @@
     $('home-content').innerHTML = data.home; // HTML from our own Worker
     $('home').hidden = false;
     startClock();
+    window.WineDogGames?.start();
   }
 
   function startClock() {
@@ -64,7 +65,7 @@
     try {
       const r = await api('/api/login', {
         method: 'POST',
-        body: JSON.stringify({ email: $('email').value, code: $('code').value }),
+        body: JSON.stringify({ code: $('code').value }),
       });
       localStorage.setItem(KEY, r.token);
       $('code').value = '';
@@ -80,6 +81,7 @@
     try { await api('/api/logout', { method: 'POST' }); } catch {}
     localStorage.removeItem(KEY);
     clearInterval(clockTimer);
+    window.WineDogGames?.stop();
     $('home-content').innerHTML = '';
     showLogin();
   });

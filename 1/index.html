@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <title>WineDog</title>
   <link rel="stylesheet" href="/assets/style.css">
   <script src="/assets/config.js"></script>
@@ -12,26 +15,106 @@
   <!-- Login -->
   <main id="login" class="center" hidden>
     <form class="card" id="login-form" autocomplete="on">
+      <img class="logo" src="/assets/icon-512.png" alt="">
       <p class="brand">WineDog</p>
-      <h1>Sign in</h1>
-      <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="email" required>
       <label for="code">Code</label>
-      <input id="code" type="password" autocomplete="current-password" required>
+      <input id="code" class="code-input" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" required>
       <button class="primary block" type="submit" id="login-btn">Continue</button>
       <div class="error" id="login-error"></div>
     </form>
   </main>
 
-  <!-- Homepage (content comes from the server after login) -->
-  <div id="home" hidden>
-    <header class="topbar">
-      <p class="brand">WineDog</p>
-      <button class="linkbtn" id="logout">Sign out</button>
-    </header>
-    <main id="home-content"></main>
+  <!-- Signed-in app -->
+  <div id="home" class="app" hidden>
+    <nav class="rail">
+      <img class="rail-logo" src="/assets/icon-192.png" alt="WineDog">
+      <a class="tab" href="#home" data-tab="home">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>Home</span>
+      </a>
+      <a class="tab" href="#games" data-tab="games">
+        <svg viewBox="0 0 24 24"><path d="M6 9h4M8 7v4M15 10h.01M18 8h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6l-.7 6.8A2.6 2.6 0 0 0 4.6 18c.8 0 1.5-.4 2-1l1.9-2h7l1.9 2c.5.6 1.2 1 2 1a2.6 2.6 0 0 0 2.6-2.6l-.7-6.8A4 4 0 0 0 17.3 5z"/></svg>
+        <span>Games</span>
+      </a>
+      <div class="rail-spacer"></div>
+      <button class="tab" id="logout" type="button">
+        <svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>
+        <span>Sign out</span>
+      </button>
+    </nav>
+
+    <!-- Home tab: content comes from the server after login -->
+    <main class="view" id="view-home">
+      <div id="home-content"></div>
+    </main>
+
+    <!-- Games tab -->
+    <main class="view" id="view-games" hidden>
+      <div class="games-wrap">
+        <header class="games-head">
+          <h1>Games <span class="muted" id="game-count"></span></h1>
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="search" type="search" placeholder="Search games" autocomplete="off" spellcheck="false">
+            <kbd>/</kbd>
+          </div>
+          <button class="iconbtn labeled" id="random" type="button" title="Play a random game">
+            <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+            <span>Random</span>
+          </button>
+        </header>
+
+        <section id="fav-section" hidden>
+          <h2>Favorites</h2>
+          <div class="game-grid" id="fav-grid"></div>
+        </section>
+        <section id="recent-section" hidden>
+          <h2>Recently played</h2>
+          <div class="game-grid" id="recent-grid"></div>
+        </section>
+        <section>
+          <h2 id="all-title">All games</h2>
+          <div class="game-grid" id="all-grid"></div>
+          <p class="muted" id="no-results" hidden>No games match your search.</p>
+        </section>
+      </div>
+    </main>
+
+    <!-- Game player -->
+    <main class="view player" id="view-player" hidden>
+      <div class="player-bar">
+        <a class="iconbtn" href="#games" title="Back to games">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+        <img class="player-icon" id="player-icon" alt="">
+        <div class="player-title" id="player-title"></div>
+        <div class="rail-spacer"></div>
+        <button class="iconbtn" id="btn-fav" type="button" title="Add to favorites">
+          <svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3l-5.5 2.9 1-6.2L3 9.6l6.2-.9z"/></svg>
+        </button>
+        <button class="iconbtn" id="btn-reload" type="button" title="Restart game">
+          <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>
+        </button>
+        <button class="iconbtn" id="btn-mute" type="button" title="Mute">
+          <svg class="ico-sound" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <svg class="ico-muted" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6"/></svg>
+        </button>
+        <button class="iconbtn" id="btn-popout" type="button" title="Open in a separate window">
+          <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+        </button>
+        <button class="iconbtn" id="btn-fullscreen" type="button" title="Fullscreen">
+          <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        </button>
+      </div>
+      <div class="frame-wrap" id="frame-wrap">
+        <iframe id="game-frame" title="Game" allow="fullscreen; autoplay; gamepad; clipboard-read; clipboard-write; pointer-lock" allowfullscreen></iframe>
+      </div>
+    </main>
   </div>
 
+  <div class="toast" id="toast" hidden></div>
+
   <script src="/assets/home.js"></script>
+  <script src="/assets/games.js"></script>
 </body>
 </html>

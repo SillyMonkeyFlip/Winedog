@@ -37,3 +37,6 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   count    INTEGER NOT NULL,
   reset_at INTEGER NOT NULL
 );
+
+-- Codes are used on their own to sign in, so each one must be unique.
+CREATE UNIQUE INDEX IF NOT EXISTS accounts_code ON accounts(code);

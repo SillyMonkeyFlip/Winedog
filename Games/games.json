@@ -1,0 +1,189 @@
+{
+  "games": [
+    {
+      "name": "1v1.LOL",
+      "path": "1v1lol",
+      "icon": "1v1lol.png"
+    },
+    {
+      "name": "2048",
+      "path": "2048",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Aim Trainer",
+      "path": "Aim Trainer",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Baldi's Basics 1.2.2",
+      "path": "Baldis Basics/1.2.2",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Baldi's Basics 1.4.5",
+      "path": "Baldis Basics/1.4.5",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Baldi's Basics Camping Demo",
+      "path": "Baldis Basics/Camping Demo",
+      "icon": "cover.jpg"
+    },
+    {
+      "name": "Baldi's Basics: Joseph Is Real",
+      "path": "Baldis Basics/Joseph Is Real",
+      "icon": "cover.webp"
+    },
+    {
+      "name": "Basket Bros",
+      "path": "basketbros-io",
+      "icon": "thumb.jpg"
+    },
+    {
+      "name": "Classic Minecraft",
+      "path": "Classic Minecraft",
+      "icon": "cover.jpg"
+    },
+    {
+      "name": "Cookie Clicker",
+      "path": "cookie-clicker",
+      "icon": "cookie-clicker.jpg"
+    },
+    {
+      "name": "CPS Test",
+      "path": "CPS Test",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Cubefield",
+      "path": "cubefield",
+      "icon": "assets/unnamed.png"
+    },
+    {
+      "name": "Dino",
+      "path": "Dino",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Doodle Jump",
+      "path": "Doodle Jump",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Flappy Bird",
+      "path": "Flappy Bird",
+      "icon": "cover.png"
+    },
+    {
+      "name": "FNF: Mario's Madness",
+      "path": "FNF Mario Maddness",
+      "icon": null
+    },
+    {
+      "name": "FNF: Nocturnal Protocol",
+      "path": "FNF/Nocturnal Protocall",
+      "icon": "cover.png"
+    },
+    {
+      "name": "FNF: The Lion's Mouth",
+      "path": "FNF/The Lions Mouth",
+      "icon": "cover.jpg"
+    },
+    {
+      "name": "Fruit Ninja",
+      "path": "fruitninja",
+      "icon": "FruitNinjaTeaser.jpg"
+    },
+    {
+      "name": "Geometry Dash",
+      "path": "GeometryDash",
+      "icon": "images.jpg"
+    },
+    {
+      "name": "Gladihoppers",
+      "path": "Gladihoppers",
+      "icon": "screenshots/1.jpg"
+    },
+    {
+      "name": "Go Fish",
+      "path": "Go Fish",
+      "icon": "cover.png"
+    },
+    {
+      "name": "HTML Viewer",
+      "path": "HTML Viewer",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Jetpack Joyride",
+      "path": "jetpack-joyride",
+      "icon": "splash.jpg"
+    },
+    {
+      "name": "Minecraft PE 0.6.1",
+      "path": "MCPE 0.6.1",
+      "icon": "cover.jpg"
+    },
+    {
+      "name": "Minesweeper",
+      "path": "Minesweeper",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Monkey Mart",
+      "path": "MonkeyMart",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Paper.io 2",
+      "path": "paperio2",
+      "icon": "images/icon192.png"
+    },
+    {
+      "name": "Sans Boss Fight",
+      "path": "SansBossfight",
+      "icon": null
+    },
+    {
+      "name": "Slope",
+      "path": "slope",
+      "icon": "slope.jpg"
+    },
+    {
+      "name": "Snake",
+      "path": "Snake",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Snow Rider 3D",
+      "path": "snowrider3d",
+      "icon": "TemplateData/logo.png"
+    },
+    {
+      "name": "Space Waves",
+      "path": "Space Waves",
+      "icon": "icon.png"
+    },
+    {
+      "name": "Tetris",
+      "path": "Tetris",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Typing Test",
+      "path": "Typing Test",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Uno",
+      "path": "Uno",
+      "icon": "cover.png"
+    },
+    {
+      "name": "Wordle Unlimited",
+      "path": "Wordle Unlimited",
+      "icon": "cover.png"
+    }
+  ]
+}

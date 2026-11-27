@@ -3,23 +3,23 @@
 | Address | What it shows |
 |---|---|
 | `winedog.site` | A blank black page (or your photo, once you add it) |
-| `winedog.site/1` | Sign-in, then the homepage (a clock for now) |
+| `winedog.site/1` | Code sign-in, then the homepage (a clock for now) |
 | `winedog.site/dev` | Your dev panel for managing accounts |
 
 ## How it fits together
 
 ```
 GitHub Pages (top folder)         Cloudflare Worker (worker/)
-  /        blank image              /api/login   checks email + code
+  /        blank image              /api/login   checks the code   
   /1       sign-in + page shell  →  /api/me      sends the protected homepage
   /dev     panel shell              /api/admin/* accounts, codes, sessions, email
                                     D1 database  accounts and remembered devices
 ```
 
 GitHub only hosts the page shells, so it holds nothing secret. The accounts, the codes and
-the homepage content all live in Cloudflare. Someone reading the GitHub files sees only an
+the homepage content all live in Cloudflare. People sign in with just their code, so every code must be unique (the panel enforces this). Codes aren't case-sensitive. Someone reading the GitHub files sees only an
 empty login form, and the homepage content (`worker/src/home.js`) is sent only after a
-correct email and code.
+correct code.
 
 When someone signs in, their device keeps a random sign-in key. They stay signed in forever
 on that device until you change their code, disable or delete the account, or sign that
@@ -107,9 +107,28 @@ You can change the sender in `wrangler.toml` (`EMAIL_FROM`), then run `npm run d
 
 The admin sign-in lasts 12 hours on a device.
 
+## Games
+
+The **Games** tab (controller icon on the left) lists every game in the `Games` folder, with
+search, favorites, recently played and a Random button. Each game opens in a player with:
+back, favorite, restart, mute, open in a separate window (the address bar shows `about:blank`),
+and fullscreen. Favorites, recently played and mute are remembered per device.
+
+- **Adding or removing games:** put the game's folder in `Games` (it needs an `index.html`), then
+  double-click **`Update Games.bat`** and commit and push. A folder with no `index.html` but with
+  game folders inside it (like `Baldis Basics`) becomes one entry per inner folder.
+- **Renaming a game or changing its picture:** edit `Games/games.json` (`name` and `icon`, where
+  `icon` is a path inside that game's folder, or `null` for a plain letter tile). Update Games keeps your edits.
+- **Mute** works through `sw.js` and `assets/game-hook.js`, which add a small helper to each game page.
+
+Note: the game files themselves are ordinary public files on GitHub Pages. The code protects the
+menu, but someone who knows a game's exact address can open it directly. GitHub Pages also has a
+1 GB size limit for the whole site and 100 MB per file.
+
 ## Changing things
 
-- **Landing page image:** save your photo as `image.jpg` (next to `index.html`), then commit and push.
+- **Landing page image:** replace `image.jpg` (next to `index.html`), then commit and push.
+- **Site icon:** `assets/icon-512.png`, `assets/icon-192.png`, `assets/favicon-32.png`, `assets/apple-touch-icon.png` and `favicon.ico`.
 - **Homepage content:** edit `worker/src/home.js`, then run **`Setup Cloudflare.bat`** again (or `npm run deploy` in the `worker` folder).
   Keep private content there, not in the website files, because everything in the repo is public on GitHub.
   `account.role` is passed in, ready for showing Special users different things later.
@@ -132,7 +151,7 @@ Then open `http://localhost:8080/dev/` (password `test`) and `http://localhost:8
 
 ## Security notes
 
-- **3-character codes are short.** There are about 32,000 possible random codes, so the Worker locks an email
+- **3-character codes are short, and people sign in with the code alone.** There are about 32,000 possible random codes, and a guesser wins by hitting *any* account's code. The Worker blocks an internet address for 15 minutes after 10 wrong tries, which makes guessing slow, but someone patient with many addresses could still get in. Longer codes are much safer, and the panel accepts codes of any length.
   for 15 minutes after 5 wrong tries, and an internet address after 20. That makes guessing slow, but someone
   determined and patient could still get in eventually. Longer codes are much safer, and the panel accepts codes of any length.
 - **Codes are stored readable** in the Cloudflare database so the panel can show and email them.
