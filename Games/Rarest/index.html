@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rarest</title>
+<style>
+  :root {
+    --bg: #0d0a10; --panel: #17121c; --line: #2c2233; --text: #f1eaf5; --muted: #9d90a7;
+    --wine: #a3204a; --wine2: #d8456f;
+    --common: #9aa3ad; --uncommon: #4cc38a; --rare: #4aa3ff; --legend: #f2b84b; --bad: #ff5c6c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(ellipse at top, #22121f 0%, var(--bg) 60%);
+    color: var(--text); font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center; overflow: hidden; user-select: none;
+  }
+  .game { width: min(560px, 94vw); }
+  .hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 13px; color: var(--muted); letter-spacing: .08em; }
+  .hud b { display: block; color: var(--text); font-size: 22px; letter-spacing: 0; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .lives { font-size: 20px; letter-spacing: 4px; color: var(--wine2); }
+  .lives .lost { color: #3a2c40; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 28px; position: relative; overflow: hidden; }
+  .timer { position: absolute; left: 0; top: 0; height: 4px; background: linear-gradient(90deg, var(--wine), var(--wine2)); width: 100%; transform-origin: left; }
+  .timer.low { background: var(--bad); }
+  .label { font-size: 12px; color: var(--muted); letter-spacing: .14em; text-transform: uppercase; }
+  .prompt { font-size: clamp(24px, 5vw, 32px); font-weight: 700; margin: 8px 0 22px; line-height: 1.2; }
+  .prompt em { font-style: normal; color: var(--wine2); }
+  form { display: flex; gap: 10px; }
+  input {
+    flex: 1; font: inherit; font-size: 18px; padding: 14px 16px; border-radius: 12px; outline: none;
+    background: #0b080d; color: var(--text); border: 1px solid var(--line);
+  }
+  input:focus { border-color: var(--wine2); }
+  button {
+    font: inherit; font-weight: 700; font-size: 15px; padding: 0 20px; border-radius: 12px; cursor: pointer;
+    border: 0; background: var(--wine2); color: #fff;
+  }
+  button:hover { filter: brightness(1.1); }
+  button.ghost { background: none; border: 1px solid var(--line); color: var(--muted); font-weight: 500; }
+  .row { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .seconds { font-variant-numeric: tabular-nums; }
+  .shake { animation: shake .3s; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+  .result { text-align: center; }
+  .badge {
+    display: inline-block; font-size: 13px; font-weight: 800; letter-spacing: .2em; padding: 6px 14px;
+    border-radius: 999px; border: 1px solid currentColor; margin: 6px 0 10px;
+  }
+  .answer { font-size: 30px; font-weight: 800; text-transform: capitalize; }
+  .points { font-size: 15px; color: var(--muted); margin-top: 4px; }
+  .points b { color: var(--text); }
+  .reveal { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0 22px; text-align: left; }
+  .reveal div { background: #0f0b12; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .reveal span { font-size: 11px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+  .reveal p { font-size: 14px; margin-top: 4px; text-transform: capitalize; line-height: 1.4; }
+  .big { width: 100%; padding: 15px; font-size: 16px; }
+
+  .title { text-align: center; }
+  .title h1 { font-size: 54px; letter-spacing: .08em; font-weight: 900; background: linear-gradient(180deg, #fff, var(--wine2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .title p { color: var(--muted); margin: 10px 0 18px; line-height: 1.6; font-size: 15px; }
+  .tiers { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+  .tiers span { font-size: 11px; font-weight: 800; letter-spacing: .14em; padding: 5px 10px; border-radius: 999px; border: 1px solid currentColor; }
+  .best { margin-top: 14px; color: var(--muted); font-size: 13px; }
+  .hidden { display: none !important; }
+  .t-common { color: var(--common); } .t-uncommon { color: var(--uncommon); } .t-rare { color: var(--rare); } .t-legend { color: var(--legend); } .t-bad { color: var(--bad); }
+</style>
+<script src="../sound.js"></script>
+<script src="prompts.js"></script>
+</head>
+<body>
+<div class="game">
+  <!-- Title -->
+  <div class="card title" id="screen-title">
+    <h1>RAREST</h1>
+    <p>Name something that fits the prompt before time runs out.<br>
+       The fewer people who'd think of your answer, the more it's worth.<br>
+       Wrong guesses just let you try again, but running out of time or skipping costs a life.<br>It never ends until you're out of lives.</p>
+    <div class="tiers">
+      <span class="t-common">COMMON 10</span>
+      <span class="t-uncommon">UNCOMMON 25</span>
+      <span class="t-rare">RARE 50</span>
+      <span class="t-legend">LEGENDARY 100</span>
+    </div>
+    <button class="big" id="start">Start</button>
+    <div class="best" id="best-line"></div>
+  </div>
+
+  <!-- Playing -->
+  <div class="hidden" id="screen-play">
+    <div class="hud">
+      <div>SCORE<b id="score">0</b></div>
+      <div style="text-align:center">ROUND<b id="round">1</b></div>
+      <div style="text-align:right">LIVES<div class="lives" id="lives"></div></div>
+    </div>
+    <div class="card" id="ask">
+      <div class="timer" id="timer"></div>
+      <div class="label">Name…</div>
+      <div class="prompt" id="prompt"></div>
+      <form id="form" autocomplete="off">
+        <input id="guess" spellcheck="false" autocapitalize="off" placeholder="Type an answer">
+        <button type="submit">Go</button>
+      </form>
+      <div class="row">
+        <span class="seconds" id="seconds"></span>
+        <span id="streak"></span>
+        <button type="button" class="ghost" id="skip" style="padding:6px 12px;font-size:13px">Skip (−1 life)</button>
+      </div>
+    </div>
+
+    <div class="card result hidden" id="result">
+      <div class="badge" id="r-badge"></div>
+      <div class="answer" id="r-answer"></div>
+      <div class="points" id="r-points"></div>
+      <div class="reveal">
+        <div><span>Most common</span><p id="r-common"></p></div>
+        <div><span>Rarest answers</span><p id="r-rare"></p></div>
+      </div>
+      <button class="big" id="next">Next prompt</button>
+    </div>
+  </div>
+
+  <!-- Game over -->
+  <div class="card title hidden" id="screen-over">
+    <h1 style="font-size:40px">OUT OF LIVES</h1>
+    <p id="over-text"></p>
+    <button class="big" id="again">Play again</button>
+    <div class="best" id="over-best"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const ROUND_SECONDS = 25;
+  const LIVES = 3;
+  const TIERS = [
+    { name: 'COMMON', cls: 't-common', pts: 10, upTo: 0.25 },
+    { name: 'UNCOMMON', cls: 't-uncommon', pts: 25, upTo: 0.5 },
+    { name: 'RARE', cls: 't-rare', pts: 50, upTo: 0.8 },
+    { name: 'LEGENDARY', cls: 't-legend', pts: 100, upTo: 1.01 },
+  ];
+  const sfx = (n) => { try { window.SFX && SFX.play(n); } catch {} };
+
+  // ---------- answer matching ----------
+  const norm = (s) => s.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/&/g, 'and').replace(/^the\s+/, '').replace(/[^a-z0-9]/g, '');
+  const stem = (s) => s.replace(/(ies)$/, 'y').replace(/(ches|shes|sses|xes|zes|oes)$/, (m) => m.slice(0, -2)).replace(/s$/, '');
+  function close(a, b) {
+    if (Math.abs(a.length - b.length) > 1 || Math.min(a.length, b.length) < 5) return false;
+    let i = 0, j = 0, edits = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return edits + (a.length - i) + (b.length - j) <= 1;
+  }
+
+  function buildPrompt(raw) {
+    const [text, ...answers] = raw;
+    const list = answers.map((a, idx) => {
+      const forms = a.split('|');
+      return { label: forms[0], keys: forms.map((f) => stem(norm(f))), idx };
+    });
+    return { text, list };
+  }
+
+  function findAnswer(p, guess) {
+    const g = stem(norm(guess));
+    if (!g) return null;
+    for (const a of p.list) if (a.keys.includes(g)) return a;
+    for (const a of p.list) if (a.keys.some((k) => close(k, g))) return a;
+    return null;
+  }
+
+  function tierOf(p, a) {
+    const frac = p.list.length > 1 ? a.idx / (p.list.length - 1) : 1;
+    return TIERS.find((t) => frac < t.upTo) || TIERS[3];
+  }
+
+  // ---------- game state ----------
+  const ALL = window.RAREST_PROMPTS.map(buildPrompt);
+  let deck = [], prompt = null, score = 0, round = 0, lives = LIVES, streak = 0, bestAnswer = null;
+  let deadline = 0, raf = 0, locked = false;
+  const best = () => +(localStorage.getItem('rarest_best') || 0);
+
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  function show(id) {
+    for (const s of ['screen-title', 'screen-play', 'screen-over']) $(s).classList.toggle('hidden', s !== id);
+  }
+
+  function hud() {
+    $('score').textContent = score;
+    $('round').textContent = round;
+    $('lives').innerHTML = Array.from({ length: LIVES }, (_, i) => `<span class="${i < lives ? '' : 'lost'}">♥</span>`).join('');
+    $('streak').textContent = streak >= 2 ? `🔥 ${streak} in a row · x${mult().toFixed(1)}` : '';
+  }
+  const mult = () => Math.min(2, 1 + Math.max(0, streak - 1) * 0.1);
+
+  function start() {
+    score = 0; round = 0; lives = LIVES; streak = 0; bestAnswer = null; deck = [];
+    show('screen-play');
+    sfx('level');
+    next();
+  }
+
+  function next() {
+    if (!deck.length) deck = shuffle(ALL.slice());
+    prompt = deck.pop();
+    round++;
+    locked = false;
+    $('prompt').innerHTML = '';
+    $('prompt').append(document.createTextNode(prompt.text.replace(/^(a|an) /, (m) => m)));
+    $('ask').classList.remove('hidden');
+    $('result').classList.add('hidden');
+    $('guess').value = '';
+    $('guess').focus();
+    hud();
+    deadline = performance.now() + ROUND_SECONDS * 1000;
+    cancelAnimationFrame(raf);
+    tick();
+  }
+
+  let lastSec = 0;
+  function tick() {
+    const left = Math.max(0, deadline - performance.now());
+    const frac = left / (ROUND_SECONDS * 1000);
+    $('timer').style.transform = `scaleX(${frac})`;
+    $('timer').classList.toggle('low', left < 6000);
+    const sec = Math.ceil(left / 1000);
+    $('seconds').textContent = sec + 's left';
+    if (sec !== lastSec && sec <= 5 && sec > 0) sfx('move');
+    lastSec = sec;
+    if (left <= 0) return finish(null, 'TIME');
+    raf = requestAnimationFrame(tick);
+  }
+
+  function finish(answer, reason) {
+    if (locked) return;
+    locked = true;
+    cancelAnimationFrame(raf);
+    const secsLeft = Math.max(0, Math.floor((deadline - performance.now()) / 1000));
+    const common = prompt.list.slice(0, 3).map((a) => a.label).join(', ');
+    const rare = prompt.list.slice(-3).reverse().map((a) => a.label).join(', ');
+    $('r-common').textContent = common;
+    $('r-rare').textContent = rare;
+
+    const badge = $('r-badge');
+    if (answer) {
+      const t = tierOf(prompt, answer);
+      streak++;
+      const pts = Math.round((t.pts + secsLeft) * mult());
+      score += pts;
+      badge.textContent = t.name;
+      badge.className = 'badge ' + t.cls;
+      $('r-answer').textContent = answer.label;
+      $('r-points').innerHTML = `+<b>${pts}</b> points (${t.pts} + ${secsLeft}s speed bonus${mult() > 1 ? `, x${mult().toFixed(1)} streak` : ''})`;
+      if (!bestAnswer || t.pts > bestAnswer.pts) bestAnswer = { label: answer.label, pts: t.pts, tier: t.name };
+      sfx(t.pts >= 100 ? 'win' : t.pts >= 50 ? 'gold' : 'point');
+    } else {
+      lives--;
+      streak = 0;
+      badge.textContent = reason === 'TIME' ? "TIME'S UP" : 'SKIPPED';
+      badge.className = 'badge t-bad';
+      $('r-answer').textContent = reason === 'TIME' ? 'No answer' : 'Skipped';
+      $('r-points').textContent = lives > 0 ? `−1 life · ${lives} left` : 'No lives left';
+      sfx('hit');
+    }
+    hud();
+    $('ask').classList.add('hidden');
+    $('result').classList.remove('hidden');
+    $('next').textContent = lives > 0 ? 'Next prompt' : 'See results';
+    $('next').focus();
+  }
+
+  function over() {
+    const prev = best();
+    const isBest = score > prev;
+    if (isBest) localStorage.setItem('rarest_best', score);
+    $('over-text').innerHTML = `You scored <b>${score}</b> over ${round} prompt${round === 1 ? '' : 's'}.` +
+      (bestAnswer ? `<br>Best answer: <b style="text-transform:capitalize">${bestAnswer.label.replace(/</g, '&lt;')}</b> (${bestAnswer.tier.toLowerCase()}).` : '') +
+      (isBest ? '<br><b style="color:var(--legend)">New best score!</b>' : '');
+    $('over-best').textContent = 'Best: ' + Math.max(score, prev);
+    show('screen-over');
+    sfx(isBest ? 'level' : 'die');
+  }
+
+  // ---------- input ----------
+  $('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (locked) return;
+    const g = $('guess').value.trim();
+    if (!g) return;
+    const a = findAnswer(prompt, g);
+    if (a) return finish(a);
+    // Not on the list: shake, keep the clock running, let them try again.
+    sfx('drop');
+    $('ask').classList.remove('shake');
+    void $('ask').offsetWidth;
+    $('ask').classList.add('shake');
+    $('guess').select();
+  });
+  $('skip').addEventListener('click', () => finish(null, 'SKIP'));
+  $('next').addEventListener('click', () => (lives > 0 ? next() : over()));
+  $('start').addEventListener('click', start);
+  $('again').addEventListener('click', start);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !$('result').classList.contains('hidden') && document.activeElement !== $('next')) $('next').click();
+  });
+
+  $('best-line').textContent = best() ? 'Best: ' + best() : '';
+})();
+</script>
+</body>
+</html>

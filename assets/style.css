@@ -193,3 +193,26 @@ section + section { margin-top: 30px; }
   .games-wrap { padding: 20px 16px 40px; }
   .game-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
 }
+
+/* ---------- settings ---------- */
+.settings-wrap { max-width: 640px; margin: 0 auto; padding: 28px 32px 60px; }
+.settings-wrap h1 { font-size: 22px; margin: 0 0 4px; }
+.settings-note { margin: 0 0 22px; font-size: 13px; }
+.settings-wrap .panel h2 { text-transform: none; letter-spacing: 0; color: var(--text); font-size: 15px; margin-bottom: 6px; }
+.small { font-size: 13px; }
+p.small { margin: 0 0 16px; }
+.wrap-row { flex-wrap: wrap; }
+.tab-preview { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 0; margin-bottom: 18px; }
+.fake-tab {
+  display: inline-flex; align-items: center; gap: 8px; width: 240px; padding: 8px 12px; background: var(--panel-2);
+  border-radius: 8px 8px 0 0; font-size: 12.5px;
+}
+.fake-tab img { width: 16px; height: 16px; object-fit: contain; }
+.fake-tab span:first-of-type { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fake-x { color: var(--muted); }
+.filebtn {
+  display: inline-flex; align-items: center; margin: 0; font-size: 13px; color: #0b0b0d; background: var(--accent);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; letter-spacing: 0;
+}
+.filebtn input { display: none; }
+.settings-wrap .check { margin: 6px 0 10px; }

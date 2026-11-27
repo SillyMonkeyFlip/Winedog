@@ -39,7 +39,10 @@
     if (!c) return;
     const tick = () => {
       const now = new Date();
-      c.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const set = window.WDSettings ? window.WDSettings.get() : {};
+      const opts = { hour: '2-digit', minute: '2-digit', hour12: !set.clock24 };
+      if (set.clockSeconds !== false) opts.second = '2-digit';
+      c.textContent = now.toLocaleTimeString([], opts);
       if (d) d.textContent = now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     };
     tick();

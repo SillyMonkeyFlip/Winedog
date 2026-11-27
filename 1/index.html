@@ -10,6 +10,7 @@
   <title>WineDog</title>
   <link rel="stylesheet" href="/assets/style.css">
   <script src="/assets/config.js"></script>
+  <script src="/assets/tab-look.js"></script>
 </head>
 <body>
   <!-- Login -->
@@ -35,6 +36,10 @@
       <a class="tab" href="#games" data-tab="games">
         <svg viewBox="0 0 24 24"><path d="M6 9h4M8 7v4M15 10h.01M18 8h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6l-.7 6.8A2.6 2.6 0 0 0 4.6 18c.8 0 1.5-.4 2-1l1.9-2h7l1.9 2c.5.6 1.2 1 2 1a2.6 2.6 0 0 0 2.6-2.6l-.7-6.8A4 4 0 0 0 17.3 5z"/></svg>
         <span>Games</span>
+      </a>
+      <a class="tab" href="#settings" data-tab="settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Settings</span>
       </a>
       <div class="rail-spacer"></div>
       <button class="tab" id="logout" type="button">
@@ -80,6 +85,56 @@
       </div>
     </main>
 
+    <!-- Settings tab -->
+    <main class="view" id="view-settings" hidden>
+      <div class="settings-wrap">
+        <h1>Settings</h1>
+        <p class="muted settings-note">Settings are saved on this device only.</p>
+
+        <section class="panel">
+          <h2>Tab look</h2>
+          <p class="muted small">Change the name and picture shown on this browser tab.</p>
+          <div class="tab-preview">
+            <div class="fake-tab">
+              <img id="tab-preview-icon" alt="">
+              <span id="tab-preview-title">WineDog</span>
+              <span class="fake-x">×</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="set-tab-title">Tab name</label>
+            <input id="set-tab-title" maxlength="80" placeholder="WineDog">
+          </div>
+          <div class="field">
+            <label>Tab picture</label>
+            <div class="row wrap-row">
+              <label class="filebtn">
+                <input type="file" id="set-tab-icon" accept="image/*">
+                Upload image
+              </label>
+              <button type="button" class="small" id="set-tab-icon-clear">Use WineDog icon</button>
+            </div>
+          </div>
+          <button type="button" class="small" id="set-tab-reset">Reset tab look</button>
+        </section>
+
+        <section class="panel">
+          <h2>Clock</h2>
+          <label class="check"><input type="checkbox" id="set-clock-24"> 24-hour time</label>
+          <label class="check"><input type="checkbox" id="set-clock-seconds"> Show seconds</label>
+        </section>
+
+        <section class="panel">
+          <h2>Games</h2>
+          <label class="check"><input type="checkbox" id="set-muted"> Mute game sound</label>
+          <div class="row wrap-row">
+            <button type="button" class="small" id="set-clear-recent">Clear recently played</button>
+            <button type="button" class="small danger" id="set-clear-fav">Clear favorites</button>
+          </div>
+        </section>
+      </div>
+    </main>
+
     <!-- Game player -->
     <main class="view player" id="view-player" hidden>
       <div class="player-bar">
@@ -107,7 +162,7 @@
         </button>
       </div>
       <div class="frame-wrap" id="frame-wrap">
-        <iframe id="game-frame" title="Game" allow="fullscreen; autoplay; gamepad; clipboard-read; clipboard-write; pointer-lock" allowfullscreen></iframe>
+        <iframe id="game-frame" title="Game" allow="fullscreen; autoplay; gamepad; clipboard-read; clipboard-write" allowfullscreen></iframe>
       </div>
     </main>
   </div>
@@ -115,6 +170,7 @@
   <div class="toast" id="toast" hidden></div>
 
   <script src="/assets/home.js"></script>
+  <script src="/assets/settings.js"></script>
   <script src="/assets/games.js"></script>
 </body>
 </html>

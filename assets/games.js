@@ -155,7 +155,7 @@
     const src = iconUrl(g);
     icon.hidden = !src;
     if (src) icon.src = src;
-    document.title = g.name + ' · WineDog';
+    window.WDSettings.setTitle(g.name + ' · WineDog');
     updateFavButton();
     sendMute();
     write(LS.recent, [g.path, ...recents().filter((p) => p !== g.path)].slice(0, MAX_RECENT));
@@ -170,7 +170,7 @@
     current = null;
     const frame = $('game-frame');
     if (frame.getAttribute('src')) frame.src = 'about:blank';
-    document.title = 'WineDog';
+    window.WDSettings.setTitle('WineDog');
   }
 
   // Opens the game in a separate blank window, so the address bar shows about:blank.
@@ -180,15 +180,16 @@
     const w = window.open('about:blank', '_blank');
     if (!w) { toast('Your browser blocked the pop-up. Allow pop-ups for this site and try again.'); return; }
     const d = w.document;
-    d.title = g.name;
+    const look = window.WDSettings.get();
+    d.title = look.tabTitle || g.name;
     const link = d.createElement('link');
     link.rel = 'icon';
-    link.href = iconUrl(g) ? location.origin + iconUrl(g) : location.origin + '/assets/favicon-32.png';
+    link.href = look.tabIcon || (iconUrl(g) ? location.origin + iconUrl(g) : location.origin + '/assets/favicon-32.png');
     d.head.append(link);
     d.body.style.cssText = 'margin:0;height:100vh;background:#000;overflow:hidden';
     const f = d.createElement('iframe');
     f.src = location.origin + gameUrl(g);
-    f.allow = 'fullscreen; autoplay; gamepad; clipboard-read; clipboard-write; pointer-lock';
+    f.allow = 'fullscreen; autoplay; gamepad; clipboard-read; clipboard-write';
     f.allowFullscreen = true;
     f.style.cssText = 'border:0;width:100%;height:100%;display:block';
     d.body.append(f);
@@ -207,8 +208,8 @@
   // ---------------------------------------------------------------- routing
 
   function show(view) {
-    for (const id of ['view-home', 'view-games', 'view-player']) $(id).hidden = id !== view;
-    const tab = view === 'view-home' ? 'home' : 'games';
+    for (const id of ['view-home', 'view-games', 'view-player', 'view-settings']) $(id).hidden = id !== view;
+    const tab = view === 'view-home' ? 'home' : view === 'view-settings' ? 'settings' : 'games';
     document.querySelectorAll('.rail .tab[data-tab]').forEach((t) => t.classList.toggle('active', t.dataset.tab === tab));
   }
 
@@ -227,13 +228,15 @@
       return;
     }
     stopGame();
-    if (h === 'games') {
+    if (h === 'settings') {
+      show('view-settings');
+      window.WDSettingsPage?.render();
+    } else if (h === 'games') {
       show('view-games');
       await loadGames();
       renderList();
     } else {
       show('view-home');
-      document.title = 'WineDog';
     }
   }
 
