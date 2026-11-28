@@ -109,6 +109,7 @@
   }
 
   // ---------------------------------------------------------------- tab presets
+  // KEEP: the owner asked that tab presets never be removed.
   // Listed in "Tab Presets/presets.json" by Update Tab Presets.bat: one per folder,
   // the folder name is the tab name and its picture is the icon.
   const PRESET_DIR = '/Tab Presets/';

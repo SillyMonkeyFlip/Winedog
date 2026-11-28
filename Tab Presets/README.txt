@@ -1,3 +1,5 @@
+KEEP THIS FEATURE: the owner asked that tab presets never be removed from WineDog.
+
 WineDog tab presets
 
 Each folder in here is one preset for Settings > Tab look on the site.

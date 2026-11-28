@@ -25,6 +25,12 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "Angry Birds Space",
+                      "path":  "Angry Birds Space",
+                      "icon":  "Angry_Birds_Space_icon.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "Baldi\u0027s Basics 1.2.2",
                       "path":  "Baldis Basics/1.2.2",
                       "icon":  "cover.png",
@@ -100,6 +106,12 @@
                       "name":  "Cubefield",
                       "path":  "cubefield",
                       "icon":  "assets/cubefield.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Danganronpa 64",
+                      "path":  "Danganronpa 64",
+                      "icon":  "images(3).png",
                       "iconAuto":  true
                   },
                   {
@@ -181,6 +193,30 @@
                       "iconAuto":  true
                   },
                   {
+                      "name":  "FNF Golden Apple",
+                      "path":  "FNF Golden Apple",
+                      "icon":  "images(1).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "FNF VS Matt V2",
+                      "path":  "FNF VS Matt V2",
+                      "icon":  "N0jP48.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "FNF Vs Trinity",
+                      "path":  "FNF Vs Trinity",
+                      "icon":  "artworks-Poni5HlpSnGLJQH2-NnMtTw-t500x500.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "FNF VS Twiddlefinger",
+                      "path":  "FNF VS Twiddlefinger",
+                      "icon":  "images.png",
+                      "iconAuto":  true
+                  },
+                  {
                       "name":  "FNF: Mario\u0027s Madness",
                       "path":  "FNF Mario Maddness",
                       "icon":  "images.jpg",
@@ -232,6 +268,12 @@
                       "name":  "Half Life",
                       "path":  "Half Life",
                       "icon":  "2133.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Happy Wheels",
+                      "path":  "Happy Wheels",
+                      "icon":  "images(2).png",
                       "iconAuto":  true
                   },
                   {
@@ -292,6 +334,84 @@
                       "name":  "Monkey Mart",
                       "path":  "MonkeyMart",
                       "icon":  "cover.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Bakeria",
+                      "path":  "Papas Bakeria",
+                      "icon":  "unnamed.png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Burgeria",
+                      "path":  "Papas Burgeria",
+                      "icon":  "images(5).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Cheeseria",
+                      "path":  "Papas Cheeseria",
+                      "icon":  "unnamed(1).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Cupcakeria",
+                      "path":  "Papas Cupcakeria",
+                      "icon":  "unnamed(2).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Donutria",
+                      "path":  "Papas Donutria",
+                      "icon":  "images(6).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Freezeria",
+                      "path":  "Papas Freezeria",
+                      "icon":  "images(7).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Pancakeria",
+                      "path":  "Papas Pancakeria",
+                      "icon":  "unnamed(3).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Pastaria",
+                      "path":  "Papas Pastaria",
+                      "icon":  "unnamed(4).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Pizzaria",
+                      "path":  "Papas Pizzaria",
+                      "icon":  "images(8).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Scoopira",
+                      "path":  "Papas Scoopira",
+                      "icon":  "images(9).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Sushiria",
+                      "path":  "Papas Sushiria",
+                      "icon":  "unnamed(5).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Tacoria",
+                      "path":  "Papas Tacoria",
+                      "icon":  "unnamed(6).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Papas Wingeria",
+                      "path":  "Papas Wingeria",
+                      "icon":  "images(10).png",
                       "iconAuto":  true
                   },
                   {
@@ -423,6 +543,12 @@
                   {
                       "name":  "Tomb of the Mask",
                       "path":  "Tomb of the Mask",
+                      "icon":  "images(4).png",
+                      "iconAuto":  true
+                  },
+                  {
+                      "name":  "Tomodatchi Collection",
+                      "path":  "Tomodatchi Collection",
                       "icon":  "images(4).png",
                       "iconAuto":  true
                   },
